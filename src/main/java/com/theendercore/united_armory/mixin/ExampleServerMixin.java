@@ -1,4 +1,4 @@
-package org.teamvoided.template.mixin;
+package com.theendercore.united_armory.mixin;
 
 import com.mojang.datafixers.DataFixer;
 import net.minecraft.server.MinecraftServer;
@@ -14,7 +14,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 import java.net.Proxy;
 
-import static org.teamvoided.template.Template.log;
+import static com.theendercore.united_armory.UnitedArmory.log;
 
 @Mixin(MinecraftServer.class)
 public class ExampleServerMixin {

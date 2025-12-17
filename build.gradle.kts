@@ -30,9 +30,9 @@ repositories {
 //println("Task: " + gradle.startParameter.taskNames.joinToString(","))
 
 modSettings {
-    entrypoint("main", "org.teamvoided.template.Template::init")
-    entrypoint("client", "org.teamvoided.template.client.TemplateClient::init")
-    entrypoint("fabric-datagen", "org.teamvoided.template.data.gen.TemplateData")
+    entrypoint("main", "com.theendercore.united_armory.UnitedArmory::init")
+    entrypoint("client", "com.theendercore.united_armory.client.UnitedArmoryClient::init")
+    entrypoint("fabric-datagen", "com.theendercore.united_armory.data.gen.UnitedArmoryData")
 
     mixinFile("${modId()}.client.mixins.json")
     mixinFile("${modId()}.mixins.json")
@@ -101,7 +101,7 @@ tasks {
 //    jar {
 //        val valTaskNames = gradle.startParameter.taskNames
 //        if (!valTaskNames.contains("runDataGen")) {
-//            exclude("org/teamvoided/template/data/gen/*")
+//            exclude("org/teamvoided/united_armory/data/gen/*")
 //        } else {
 //            println("Running datagen for task ${valTaskNames.joinToString(" ")}")
 //        }
