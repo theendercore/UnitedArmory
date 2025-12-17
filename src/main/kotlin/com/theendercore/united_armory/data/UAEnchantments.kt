@@ -6,10 +6,11 @@ import net.minecraft.resources.ResourceKey
 import net.minecraft.world.item.enchantment.Enchantment
 
 
-object NameEnchantments {
+object UAEnchantments {
     val ENCHANTMENTS = mutableSetOf<ResourceKey<Enchantment>>()
     
-    val CUSTOM = create("custom")
+    val TEMP_REELING = create("temp_reeling")
+    val TEMP_SHOCKWAVE = create("temp_shockwave")
 
      fun create(id: String): ResourceKey<Enchantment> {
         val enchantment = ResourceKey.create(Registries.ENCHANTMENT, id(id))
