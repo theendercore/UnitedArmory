@@ -1,25 +1,30 @@
 package com.theendercore.united_armory.init
 
 import com.theendercore.united_armory.UnitedArmory.id
+import com.theendercore.united_armory.item.CustomShieldItem
 import com.theendercore.united_armory.item.UATiers
 import com.theendercore.united_armory.item.UnnamedAnchor
 import com.theendercore.united_armory.item.UnnamedScythe
 import com.theendercore.united_armory.item.UnnamedSpear
 import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents
 import net.minecraft.core.Registry
+import net.minecraft.core.component.DataComponents
 import net.minecraft.core.component.DataComponents.TOOL
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.tags.BlockTags
 import net.minecraft.world.entity.EquipmentSlotGroup
 import net.minecraft.world.entity.ai.attributes.AttributeModifier
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
+import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.item.Item
 import net.minecraft.world.item.Item.Properties
+import net.minecraft.world.item.ShieldItem
 import net.minecraft.world.item.SwordItem
 import net.minecraft.world.item.Tier
 import net.minecraft.world.item.component.ItemAttributeModifiers
 import net.minecraft.world.item.component.Tool
+import net.minecraft.world.level.block.entity.BannerPatternLayers
 
 @Suppress("unused")
 object UAItems {
@@ -29,6 +34,12 @@ object UAItems {
     val UNNAMED_SCYTHE =
         register("unnamed_scythe", UnnamedScythe(attrib(swordAttributes(UATiers.UNNAMED_SCYTHE, -2.6f))))
     val UNNAMED_SPEAR = register("unnamed_spear", UnnamedSpear(attrib(unnamedSpear())))
+
+    val NETHERITE_SHIELD = register(
+        "netherite_shield", CustomShieldItem(
+            Properties().durability(512).component(DataComponents.BANNER_PATTERNS, BannerPatternLayers.EMPTY)
+        )
+    )
 
     fun init() {
         DefaultItemComponentEvents.MODIFY.register { ctx ->
@@ -55,12 +66,12 @@ object UAItems {
     fun unnamedSpear(): ItemAttributeModifiers = swordAttributes(UATiers.UNNAMED_SPEAR, -3.1F)
         .withModifierAdded(
             Attributes.BLOCK_INTERACTION_RANGE,
-            AttributeModifier(id("unnamed_spear.block_interaction_range"), 1.5, ADD_MULTIPLIED_TOTAL),
+            AttributeModifier(id("unnamed_spear.block_interaction_range"), 1.5, ADD_VALUE),
             EquipmentSlotGroup.MAINHAND
         )
         .withModifierAdded(
             Attributes.ENTITY_INTERACTION_RANGE,
-            AttributeModifier(id("unnamed_spear.entity_interaction_range"), 1.5, ADD_MULTIPLIED_TOTAL),
+            AttributeModifier(id("unnamed_spear.entity_interaction_range"), 1.5, ADD_VALUE),
             EquipmentSlotGroup.MAINHAND
         )
 

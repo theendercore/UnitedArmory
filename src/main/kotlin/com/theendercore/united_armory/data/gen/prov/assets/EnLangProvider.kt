@@ -1,5 +1,6 @@
 package com.theendercore.united_armory.data.gen.prov.assets
 
+import com.theendercore.united_armory.data.tag.UAItemTags
 import com.theendercore.united_armory.init.UAEntityTypes
 import com.theendercore.united_armory.init.UAItems
 import com.theendercore.united_armory.init.UATabs
@@ -21,7 +22,7 @@ class EnLangProvider(o: FabricDataOutput, r: CompletableFuture<HolderLookup.Prov
         UAEntityTypes.ENTITY_TYPES.forEach { gen.add(it.descriptionId, genLang(it.id)) }
         gen.add(UATabs.TAB_KEY, "United Armory")
 
-//        UAItemTags.ITEM_TAGS.forEach { gen.add(it.translationKey, genLang(it.location)) }
+        UAItemTags.ITEM_TAGS.forEach { gen.add(it.translationKey, genLang(it.location)) }
     }
 
 

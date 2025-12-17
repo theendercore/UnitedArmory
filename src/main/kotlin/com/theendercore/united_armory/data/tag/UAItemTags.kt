@@ -9,6 +9,9 @@ object UAItemTags {
     val ITEM_TAGS = mutableSetOf<TagKey<Item>>()
 
     val ANCHOR_ENCHANTABLE = create("enchantable/anchor")
+    @JvmField
+    val NON_DISABLEABLE_SHIELD = create("non_disableable_shield")
+    val NETHERITE_SHIELD_REPAIR = create("netherite_shield_repair")
 
 
     fun create(id: String): TagKey<Item> {

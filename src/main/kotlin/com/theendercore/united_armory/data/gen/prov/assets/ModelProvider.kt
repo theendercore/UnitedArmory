@@ -11,8 +11,9 @@ import net.minecraft.data.models.model.ModelTemplates
 class ModelProvider(o: FabricDataOutput) : FabricModelProvider(o) {
     override fun generateBlockStateModels(blockStateModelGenerator: BlockModelGenerators) = Unit
     override fun generateItemModels(gen: ItemModelGenerators) {
-        for (item in UAItems.ITEMS) {
-            gen.generateFlatItem(item, ModelTemplates.FLAT_ITEM)
+        val weapon = listOf(UAItems.UNNAMED_ANCHOR, UAItems.UNNAMED_SCYTHE, UAItems.UNNAMED_SPEAR)
+        for (item in weapon) {
+            gen.generateFlatItem(item, ModelTemplates.FLAT_HANDHELD_ITEM)
         }
     }
 }

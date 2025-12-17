@@ -1,10 +1,12 @@
 package com.theendercore.united_armory.client
 
-import com.theendercore.united_armory.UnitedArmory
+import net.fabricmc.fabric.api.resource.ResourceManagerHelper
+import net.minecraft.server.packs.PackType
 
 @Suppress("unused")
 object UnitedArmoryClient {
     fun init() {
-        UnitedArmory.log.info("Hello from Client")
+        ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(UAModelHolder)
+        NetheriteShield.init()
     }
 }

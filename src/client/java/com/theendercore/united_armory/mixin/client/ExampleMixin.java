@@ -6,13 +6,10 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
-import static com.theendercore.united_armory.UnitedArmory.log;
-
 @Mixin(Minecraft.class)
 public class ExampleMixin {
 
     @Inject(method = "run", at = @At("HEAD"))
     private void run(CallbackInfo info) {
-        log.info("Hello from Mixin");
     }
 }

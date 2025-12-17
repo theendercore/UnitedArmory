@@ -1,14 +1,12 @@
 package com.theendercore.united_armory
 
-import me.fzzyhmstrs.fzzy_config.api.ConfigApi
-import net.minecraft.resources.ResourceLocation
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
-import com.theendercore.united_armory.config.UnitedArmoryConfig
 import com.theendercore.united_armory.init.UADataComponents
 import com.theendercore.united_armory.init.UAEntityTypes
 import com.theendercore.united_armory.init.UAItems
 import com.theendercore.united_armory.init.UATabs
+import net.minecraft.resources.ResourceLocation
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 @Suppress("unused")
 object UnitedArmory {
@@ -17,11 +15,11 @@ object UnitedArmory {
     @JvmField
     val log: Logger = LoggerFactory.getLogger(UnitedArmory::class.simpleName)
 
-    @JvmField
-    var config = ConfigApi.registerAndLoadConfig(::UnitedArmoryConfig)
+//    @JvmField
+//    var config = ConfigApi.registerAndLoadConfig(::UnitedArmoryConfig)
 
     fun init() {
-        log.info("Hello from Common")
+        log.info("Uniting Armor")
         UADataComponents.init()
         UAItems.init()
         UATabs.init()
