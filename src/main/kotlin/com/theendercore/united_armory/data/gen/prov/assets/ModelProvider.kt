@@ -15,6 +15,10 @@ class ModelProvider(o: FabricDataOutput) : FabricModelProvider(o) {
         for (item in weapon) {
             gen.generateFlatItem(item, ModelTemplates.FLAT_HANDHELD_ITEM)
         }
-        gen.generateFlatItem(UAItems.UNNAMED_CROWN, ModelTemplates.FLAT_ITEM)
+        val flat = listOf(UAItems.UNNAMED_CROWN, UAItems.STRENGTH_RING, UAItems.SPEED_RING, UAItems.HEALTH_BOOST_RING)
+
+        for (item in flat) {
+            gen.generateFlatItem(item, ModelTemplates.FLAT_ITEM)
+        }
     }
 }

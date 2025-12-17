@@ -3,18 +3,23 @@ package com.theendercore.united_armory.init
 import com.theendercore.united_armory.UnitedArmory.id
 import com.theendercore.united_armory.item.*
 import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents
+import net.minecraft.core.Holder
 import net.minecraft.core.Registry
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.component.DataComponents.TOOL
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.tags.BlockTags
 import net.minecraft.world.entity.EquipmentSlotGroup
+import net.minecraft.world.entity.ai.attributes.Attribute
 import net.minecraft.world.entity.ai.attributes.AttributeModifier
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE
 import net.minecraft.world.entity.ai.attributes.Attributes
-import net.minecraft.world.item.*
+import net.minecraft.world.item.ArmorItem
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.Item.Properties
+import net.minecraft.world.item.SwordItem
+import net.minecraft.world.item.Tier
 import net.minecraft.world.item.component.ItemAttributeModifiers
 import net.minecraft.world.item.component.Tool
 import net.minecraft.world.level.block.entity.BannerPatternLayers
@@ -44,6 +49,20 @@ object UAItems {
             )
         )
     )
+
+    val STRENGTH_RING = register("strength_ring", Item(attrib(ring(Attributes.ATTACK_DAMAGE, 12.0))))
+    val SPEED_RING = register("speed_ring", Item(attrib(ring(Attributes.MOVEMENT_SPEED, 0.8, ADD_MULTIPLIED_TOTAL))))
+    val HEALTH_BOOST_RING = register("health_boost_ring", Item(attrib(ring(Attributes.MAX_HEALTH, 10.0 ))))
+
+    fun ring(
+        mod: Holder<Attribute>,
+        amount: Double,
+        addType: AttributeModifier.Operation = ADD_VALUE,
+    ): ItemAttributeModifiers = ItemAttributeModifiers.builder().add(
+        mod, AttributeModifier(id("ring.${mod.unwrapKey().get().location().path}"), amount, addType),
+        EquipmentSlotGroup.HAND
+    ).build()
+
 
     fun init() {
         DefaultItemComponentEvents.MODIFY.register { ctx ->
