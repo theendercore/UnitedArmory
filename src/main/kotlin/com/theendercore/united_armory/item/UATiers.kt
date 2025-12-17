@@ -10,7 +10,9 @@ import net.minecraft.world.level.block.Block
 
 object UATiers {
 
-    val UNNAMED_ANCHOR = UATier(1, 6f, 10f, 0, BlockTags.INCORRECT_FOR_DIAMOND_TOOL, ItemTags.DIRT)
+    val UNNAMED_ANCHOR = UATier(10, 6f, 10f, 0, BlockTags.INCORRECT_FOR_DIAMOND_TOOL, ItemTags.DIRT)
+    val UNNAMED_SCYTHE = UATier(10, 6f, 8f, 0, BlockTags.INCORRECT_FOR_DIAMOND_TOOL, ItemTags.DIRT)
+    val UNNAMED_SPEAR = UATier(10, 6f, 6f, 0, BlockTags.INCORRECT_FOR_DIAMOND_TOOL, ItemTags.DIRT)
 
     class UATier(
         private val uses: Int, private val speed: Float, val attackDamage: Float, private val enchantmentValue: Int,

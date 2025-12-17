@@ -8,6 +8,7 @@ import net.minecraft.world.entity.Entity
 
 object UADamageTypes {
     val CUSTOM = create("custom")
+    val UNNAMED_BLOODSTEAL = create("unnamed_bloodsteal")
 
     fun create(id: String): ResourceKey<DamageType> = ResourceKey.create(Registries.DAMAGE_TYPE, id(id))
 
