@@ -15,5 +15,6 @@ class ModelProvider(o: FabricDataOutput) : FabricModelProvider(o) {
         for (item in weapon) {
             gen.generateFlatItem(item, ModelTemplates.FLAT_HANDHELD_ITEM)
         }
+        gen.generateFlatItem(UAItems.UNNAMED_CROWN, ModelTemplates.FLAT_ITEM)
     }
 }

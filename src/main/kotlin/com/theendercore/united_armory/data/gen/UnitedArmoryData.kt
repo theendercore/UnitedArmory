@@ -1,7 +1,6 @@
 package com.theendercore.united_armory.data.gen
 
 import com.theendercore.united_armory.UnitedArmory.MODID
-import com.theendercore.united_armory.UnitedArmory.log
 import com.theendercore.united_armory.data.gen.prov.assets.EnLangProvider
 import com.theendercore.united_armory.data.gen.prov.assets.ModelProvider
 import com.theendercore.united_armory.data.gen.prov.data.DamageTypeCreator

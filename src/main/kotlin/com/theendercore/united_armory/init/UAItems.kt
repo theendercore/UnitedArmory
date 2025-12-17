@@ -1,11 +1,7 @@
 package com.theendercore.united_armory.init
 
 import com.theendercore.united_armory.UnitedArmory.id
-import com.theendercore.united_armory.item.CustomShieldItem
-import com.theendercore.united_armory.item.UATiers
-import com.theendercore.united_armory.item.UnnamedAnchor
-import com.theendercore.united_armory.item.UnnamedScythe
-import com.theendercore.united_armory.item.UnnamedSpear
+import com.theendercore.united_armory.item.*
 import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents
 import net.minecraft.core.Registry
 import net.minecraft.core.component.DataComponents
@@ -17,11 +13,8 @@ import net.minecraft.world.entity.ai.attributes.AttributeModifier
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE
 import net.minecraft.world.entity.ai.attributes.Attributes
-import net.minecraft.world.item.Item
+import net.minecraft.world.item.*
 import net.minecraft.world.item.Item.Properties
-import net.minecraft.world.item.ShieldItem
-import net.minecraft.world.item.SwordItem
-import net.minecraft.world.item.Tier
 import net.minecraft.world.item.component.ItemAttributeModifiers
 import net.minecraft.world.item.component.Tool
 import net.minecraft.world.level.block.entity.BannerPatternLayers
@@ -38,6 +31,17 @@ object UAItems {
     val NETHERITE_SHIELD = register(
         "netherite_shield", CustomShieldItem(
             Properties().durability(512).component(DataComponents.BANNER_PATTERNS, BannerPatternLayers.EMPTY)
+        )
+    )
+    val UNNAMED_CROWN = register(
+        "unnamed_crown", ArmorItem(
+            UAArmorMaterials.CROWN, ArmorItem.Type.HELMET,
+            Properties().durability(ArmorItem.Type.HELMET.getDurability(10)).attributes(
+                ItemAttributeModifiers.builder().add(
+                    Attributes.MAX_HEALTH, AttributeModifier(id("unnamed_crown.max_health"), 10.0, ADD_VALUE),
+                    EquipmentSlotGroup.HEAD
+                ).build()
+            )
         )
     )
 
