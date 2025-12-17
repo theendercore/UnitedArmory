@@ -1,2 +1,2 @@
-# The TeamVoided Template
-Template mod by TeamVoided
+# United Armory
+A commission mod for Kira. Heavily inspired by doctor4t's mods
