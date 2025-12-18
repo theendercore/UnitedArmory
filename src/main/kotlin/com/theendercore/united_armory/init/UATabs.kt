@@ -9,7 +9,7 @@ import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.CreativeModeTab
 
-@Suppress("SameParameterValue")
+@Suppress("SameParameterValue", "unused")
 object UATabs {
     const val TAB_KEY = "itemGroup.$MODID.main"
 
