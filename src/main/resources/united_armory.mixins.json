@@ -6,6 +6,7 @@
   "mixins": [
     "AttackTickerAccessor",
     "AxeItemMixin",
+    "ItemStackMixin",
     "PlayerAttackMixin",
     "PlayerMixin"
   ],

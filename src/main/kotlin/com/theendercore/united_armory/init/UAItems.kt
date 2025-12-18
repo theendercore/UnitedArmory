@@ -3,6 +3,7 @@ package com.theendercore.united_armory.init
 import com.theendercore.united_armory.UnitedArmory.id
 import com.theendercore.united_armory.init.misc.*
 import com.theendercore.united_armory.item.*
+import com.theendercore.united_armory.util.getId
 import net.fabricmc.fabric.api.item.v1.DefaultItemComponentEvents
 import net.minecraft.core.Holder
 import net.minecraft.core.Registry
@@ -42,16 +43,6 @@ object UAItems {
     val SPEED_RING = register("speed_ring", ring(Attributes.MOVEMENT_SPEED, 0.8, ADD_MULTIPLIED_TOTAL))
     val HEALTH_BOOST_RING = register("health_boost_ring", ring(Attributes.MAX_HEALTH, 10.0))
 
-
-    fun ring(mod: Holder<Attribute>, amount: Double, addType: AttributeModifier.Operation = ADD_VALUE) = Item(
-        attributes(
-            ItemAttributeModifiers.builder().add(
-                mod, AttributeModifier(id("ring.${mod.unwrapKey().get().location().path}"), amount, addType),
-                EquipmentSlotGroup.HAND
-            ).build()
-        )
-    )
-
     fun init() {
         DefaultItemComponentEvents.MODIFY.register { ctx ->
             ctx.modify(UNNAMED_ANCHOR) {
@@ -61,6 +52,14 @@ object UAItems {
             }
         }
     }
+
+    fun ring(mod: Holder<Attribute>, amount: Double, addType: AttributeModifier.Operation = ADD_VALUE) = Item(
+        attributes(
+            ItemAttributeModifiers.builder()
+                .add(mod, AttributeModifier(id("ring.${mod.getId()!!.path}"), amount, addType), EquipmentSlotGroup.HAND)
+                .build()
+        )
+    )
 
 
     fun <T : Item> register(id: String, item: T): T {

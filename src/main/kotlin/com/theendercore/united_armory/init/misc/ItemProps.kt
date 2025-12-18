@@ -5,6 +5,7 @@ import com.theendercore.united_armory.init.UADataComponents
 import com.theendercore.united_armory.item.UATiers
 import com.theendercore.united_armory.item.component.CustomSweep
 import com.theendercore.united_armory.util.holder
+import com.theendercore.united_armory.util.lib.greenModifier
 import net.minecraft.core.Holder
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.particles.ParticleOptions
@@ -14,7 +15,6 @@ import net.minecraft.sounds.SoundEvents
 import net.minecraft.world.entity.EquipmentSlotGroup
 import net.minecraft.world.entity.ai.attributes.AttributeModifier
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
-import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_VALUE
 import net.minecraft.world.entity.ai.attributes.Attributes
 import net.minecraft.world.item.ArmorItem
 import net.minecraft.world.item.Item.Properties
@@ -46,12 +46,12 @@ fun unnamedSpear(): Properties = Properties()
         swordAttributes(UATiers.UNNAMED_SPEAR, -3.1F)
             .withModifierAdded(
                 Attributes.BLOCK_INTERACTION_RANGE,
-                AttributeModifier(id("unnamed_spear.block_interaction_range"), 1.5, ADD_VALUE),
+                greenModifier(Attributes.BLOCK_INTERACTION_RANGE, "unnamed_spear.block_interaction_range", 1.5),
                 EquipmentSlotGroup.MAINHAND
             )
             .withModifierAdded(
                 Attributes.ENTITY_INTERACTION_RANGE,
-                AttributeModifier(id("unnamed_spear.entity_interaction_range"), 1.5, ADD_VALUE),
+                greenModifier(Attributes.ENTITY_INTERACTION_RANGE, "unnamed_spear.entity_interaction_range", 1.5),
                 EquipmentSlotGroup.MAINHAND
             )
     )
@@ -64,7 +64,9 @@ fun unnamedCrown(): Properties = Properties()
     .durability(ArmorItem.Type.HELMET.getDurability(1))
     .attributes(
         ItemAttributeModifiers.builder().add(
-            Attributes.MAX_HEALTH, AttributeModifier(id("unnamed_crown.max_health"), 10.0, ADD_VALUE),
+            Attributes.MAX_HEALTH, AttributeModifier(id("unnamed_crown.max_health"), 10.0,
+                AttributeModifier.Operation.ADD_VALUE
+            ),
             EquipmentSlotGroup.HEAD
         ).build()
     )
