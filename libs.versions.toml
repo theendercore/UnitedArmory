@@ -3,7 +3,7 @@ kotlin = "2.3.0"
 fabric-loom = "1.13-SNAPSHOT"
 iridium = "3.5.0"
 # Dependencies
-fzzy-config = "0.7.4+1.21"
+fzzy-config = "0.7.4-fix1+1.21"
 # QoL
 modmenu = "11.0.3"
 emi = "1.1.22+1.21.1"
