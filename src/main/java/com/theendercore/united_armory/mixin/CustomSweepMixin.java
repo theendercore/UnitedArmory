@@ -14,8 +14,8 @@ import static com.theendercore.united_armory.util.SweepWindshieldKt.getCustomSwe
 import static com.theendercore.united_armory.util.SweepWindshieldKt.getCustomSweepSound;
 
 @Mixin(Player.class)
-public abstract class PlayerAttackMixin extends LivingEntity {
-    protected PlayerAttackMixin(EntityType<? extends LivingEntity> entityType, Level level) {
+public abstract class CustomSweepMixin extends LivingEntity {
+    protected CustomSweepMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
     }
 

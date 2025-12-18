@@ -6,9 +6,10 @@
   "mixins": [
     "AttackTickerAccessor",
     "AxeItemMixin",
+    "CustomSweepMixin",
     "ItemStackMixin",
-    "PlayerAttackMixin",
-    "PlayerMixin"
+    "PlayerMixin",
+    "ScytheMixin"
   ],
   "injectors": {
     "defaultRequire": 1
