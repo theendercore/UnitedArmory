@@ -8,7 +8,6 @@ import net.minecraft.core.Registry
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.network.chat.Component
 import net.minecraft.world.item.CreativeModeTab
-import net.minecraft.world.item.Items
 
 @Suppress("SameParameterValue")
 object UATabs {
@@ -16,7 +15,7 @@ object UATabs {
 
     val MOD_TAB = register(
         MODID, FabricItemGroup.builder()
-            .icon { Items.BLAZE_ROD.defaultInstance }
+            .icon { UAItems.UNNAMED_SPEAR.defaultInstance }
             .title(Component.translatable(TAB_KEY))
             .displayItems { _, tab -> UAItems.ITEMS.forEach(tab::accept) }
     )
