@@ -33,11 +33,10 @@ fun doReverseKnockback(player: Player, original: Float, entity: Entity) {
     player.setSprinting(false)
 }
 
-fun LivingEntity.cKnockback(d: Double, e: Double, f: Double) {
-    var d = d
+fun LivingEntity.cKnockback(scaleIn: Double, e: Double, f: Double) {
+    val scale = scaleIn * (1.0 - getAttributeValue(Attributes.KNOCKBACK_RESISTANCE))
     var e = e
     var f = f
-    d *= 1.0 - getAttributeValue(Attributes.KNOCKBACK_RESISTANCE)
     this.hasImpulse = true
     val vec3 = deltaMovement
 
@@ -46,10 +45,10 @@ fun LivingEntity.cKnockback(d: Double, e: Double, f: Double) {
         f = (Math.random() - Math.random()) * 0.01
     }
 
-    val vec32 = Vec3(e, 0.0, f).normalize().scale(d)
+    val vec32 = Vec3(e, 0.0, f).normalize().scale(scale)
     setDeltaMovement(
         vec3.x / 2.0 - vec32.x,
-        if (onGround()) min(0.4, vec3.y / 2.0 - d) else vec3.y,
+        if (onGround()) min(0.4, vec3.y / 2.0 - scale) else vec3.y,
         vec3.z / 2.0 - vec32.z
     )
 }
