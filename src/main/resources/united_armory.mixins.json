@@ -9,7 +9,7 @@
     "CustomSweepMixin",
     "ItemStackMixin",
     "PlayerMixin",
-    "ScytheMixin"
+    "ScytheKBMixin"
   ],
   "injectors": {
     "defaultRequire": 1
