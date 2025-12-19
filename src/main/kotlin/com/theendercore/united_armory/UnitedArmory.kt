@@ -7,6 +7,7 @@ import com.theendercore.united_armory.init.UATabs
 import com.theendercore.united_armory.util.addAttackTicker
 import com.theendercore.united_armory.util.attackTicker
 import net.fabricmc.fabric.api.event.player.UseItemCallback
+import net.fabricmc.loader.api.FabricLoader
 import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.server.level.ServerPlayer
@@ -32,7 +33,7 @@ object UnitedArmory {
         UAItems.init()
         UATabs.init()
         UAEntityTypes.init()
-        UseItemCallback.EVENT.register { player, level, hand ->
+        if (isDev()) UseItemCallback.EVENT.register { player, level, hand ->
             if (hand == InteractionHand.MAIN_HAND) {
                 if (player is ServerPlayer) {
                     var str = "Held delay: ${player.currentItemAttackStrengthDelay}"
@@ -51,4 +52,6 @@ object UnitedArmory {
     fun id(namespace: String, path: String): ResourceLocation = ResourceLocation.fromNamespaceAndPath(namespace, path)
     fun mc(path: String): ResourceLocation = ResourceLocation.withDefaultNamespace(path)
     fun id(path: String) = id(MODID, path)
+
+    fun isDev() = FabricLoader.getInstance().isDevelopmentEnvironment
 }
