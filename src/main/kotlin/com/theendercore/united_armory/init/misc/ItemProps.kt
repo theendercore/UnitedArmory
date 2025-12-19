@@ -39,6 +39,10 @@ fun unnamedAnchor(): Properties = Properties()
     )
     .customSweep(SoundEvents.ANVIL_PLACE, ParticleTypes.EXPLOSION)
 
+fun unnamedScythe(): Properties = Properties()
+    .attributes(swordAttributes(UATiers.UNNAMED_SCYTHE, -2.6f))
+    .customSweep(SoundEvents.ITEM_BREAK, ParticleTypes.HEART)
+
 
 fun unnamedSpear(): Properties = Properties()
     .attributes(

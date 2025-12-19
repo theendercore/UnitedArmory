@@ -1,4 +1,4 @@
-package com.theendercore.united_armory.util
+package com.theendercore.united_armory.util.lib
 
 import com.theendercore.united_armory.init.UADataComponents.CUSTOM_SWEEP
 import net.minecraft.core.Holder
