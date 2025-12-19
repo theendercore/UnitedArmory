@@ -5,7 +5,7 @@ import net.minecraft.world.effect.MobEffect
 import net.minecraft.world.effect.MobEffectCategory
 
 @Suppress("unused")
-class OpenMobEffect : MobEffect {
+open class OpenMobEffect : MobEffect {
     constructor(category: MobEffectCategory, color: Int) : super(category, color)
     constructor(category: MobEffectCategory, color: Int, particle: ParticleOptions) : super(category, color, particle)
 }

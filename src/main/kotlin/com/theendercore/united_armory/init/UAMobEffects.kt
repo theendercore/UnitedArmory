@@ -1,7 +1,7 @@
 package com.theendercore.united_armory.init
 
 import com.theendercore.united_armory.UnitedArmory.id
-import com.theendercore.united_armory.effect.OpenMobEffect
+import com.theendercore.united_armory.effect.IEffect
 import com.theendercore.united_armory.util.getModEntries
 import net.minecraft.core.Holder
 import net.minecraft.core.Registry
@@ -15,7 +15,7 @@ object UAMobEffects {
 
     // Phantom
     @JvmField
-    val UNNAMED_IFRAMES = register("unnamed_iframes", OpenMobEffect(MobEffectCategory.BENEFICIAL, 0x33d6ff))
+    val UNNAMED_IFRAMES = register("unnamed_iframes", IEffect(MobEffectCategory.BENEFICIAL, 0x33d6ff))
 
     fun init() = Unit
     fun <T : MobEffect> register(id: String, effect: T): Holder<MobEffect> =

@@ -4,7 +4,7 @@
   "package": "com.theendercore.united_armory.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "EntityRenderDispatcherMixin"
+    "LivingEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1
