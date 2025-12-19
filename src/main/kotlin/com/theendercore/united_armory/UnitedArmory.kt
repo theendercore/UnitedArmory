@@ -3,6 +3,7 @@ package com.theendercore.united_armory
 import com.theendercore.united_armory.init.UADataComponents
 import com.theendercore.united_armory.init.UAEntityTypes
 import com.theendercore.united_armory.init.UAItems
+import com.theendercore.united_armory.init.UAMobEffects
 import com.theendercore.united_armory.init.UATabs
 import com.theendercore.united_armory.util.addAttackTicker
 import com.theendercore.united_armory.util.attackTicker
@@ -33,6 +34,8 @@ object UnitedArmory {
         UAItems.init()
         UATabs.init()
         UAEntityTypes.init()
+        UAMobEffects.init()
+
         if (isDev()) UseItemCallback.EVENT.register { player, level, hand ->
             if (hand == InteractionHand.MAIN_HAND) {
                 if (player is ServerPlayer) {

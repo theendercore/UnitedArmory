@@ -3,6 +3,7 @@ package com.theendercore.united_armory.data.gen.prov.assets
 import com.theendercore.united_armory.data.tag.UAItemTags
 import com.theendercore.united_armory.init.UAEntityTypes
 import com.theendercore.united_armory.init.UAItems
+import com.theendercore.united_armory.init.UAMobEffects
 import com.theendercore.united_armory.init.UATabs
 import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricLanguageProvider
@@ -19,9 +20,10 @@ class EnLangProvider(o: FabricDataOutput, r: CompletableFuture<HolderLookup.Prov
 
     override fun generateTranslations(lookup: HolderLookup.Provider, gen: TranslationBuilder) {
         UAItems.ITEMS.forEach { gen.add(it.descriptionId, genLang(it.id)) }
+        UAMobEffects.MOB_EFFECTS.forEach { gen.add(it.descriptionId, genLang(it.id)) }
         UAEntityTypes.ENTITY_TYPES.forEach { gen.add(it.descriptionId, genLang(it.id)) }
-        gen.add(UATabs.TAB_KEY, "United Armory")
 
+        gen.add(UATabs.TAB_KEY, "United Armory")
         UAItemTags.ITEM_TAGS.forEach { gen.add(it.translationKey, genLang(it.location)) }
     }
 
