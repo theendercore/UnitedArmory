@@ -16,7 +16,6 @@ import net.minecraft.world.entity.EquipmentSlotGroup
 import net.minecraft.world.entity.ai.attributes.AttributeModifier
 import net.minecraft.world.entity.ai.attributes.AttributeModifier.Operation.ADD_MULTIPLIED_TOTAL
 import net.minecraft.world.entity.ai.attributes.Attributes
-import net.minecraft.world.item.ArmorItem
 import net.minecraft.world.item.Item.Properties
 import net.minecraft.world.item.SwordItem
 import net.minecraft.world.item.Tier
@@ -61,12 +60,11 @@ fun shieldProps(durability: Int = 512): Properties = Properties()
     .component(DataComponents.BANNER_PATTERNS, BannerPatternLayers.EMPTY)
 
 fun unnamedCrown(): Properties = Properties()
-    .durability(ArmorItem.Type.HELMET.getDurability(1))
+    .durability(666/*ArmorItem.Type.HELMET.getDurability(1)*/)
     .attributes(
         ItemAttributeModifiers.builder().add(
-            Attributes.MAX_HEALTH, AttributeModifier(id("unnamed_crown.max_health"), 10.0,
-                AttributeModifier.Operation.ADD_VALUE
-            ),
+            Attributes.MAX_HEALTH,
+            AttributeModifier(id("unnamed_crown.max_health"), 10.0, AttributeModifier.Operation.ADD_VALUE),
             EquipmentSlotGroup.HEAD
         ).build()
     )
