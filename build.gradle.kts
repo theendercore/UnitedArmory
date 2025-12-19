@@ -58,8 +58,7 @@ loom {
     splitEnvironmentSourceSets()
     runs {
         named("client") {
-            programArgs("--username", username)
-            uuid?.let { programArgs("--uuid", uuid) }
+            programArgs("--username", "vDev2")
         }
 
         create("TestWorld") {
