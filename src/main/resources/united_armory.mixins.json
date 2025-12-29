@@ -6,6 +6,7 @@
   "mixins": [
     "AttackTickerAccessor",
     "AxeItemMixin",
+    "CustomAttackSoundsMixin",
     "CustomSweepMixin",
     "IframeMixin",
     "ItemStackMixin",

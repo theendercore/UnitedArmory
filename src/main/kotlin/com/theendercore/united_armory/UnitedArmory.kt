@@ -32,6 +32,7 @@ object UnitedArmory {
         UAEntityTypes.init()
         UADataAttachments.init()
         UAMobEffects.init()
+        UASoundsEvents.init()
 
         if (isDev()) UseItemCallback.EVENT.register { player, level, hand ->
             if (hand == InteractionHand.MAIN_HAND) {

@@ -1,0 +1,42 @@
+{
+  "united_armory.entity.player.attack.weak": {
+    "category": "entity",
+    "sounds": [
+      {
+        "name": "united_armory:weapon/weak",
+        "volume": 1.0,
+        "pitch": 1.0
+      }
+    ]
+  },
+  "united_armory.entity.player.attack.strong": {
+    "category": "entity",
+    "sounds": [
+      {
+        "name": "united_armory:weapon/strong",
+        "volume": 1.0,
+        "pitch": 1.0
+      }
+    ]
+  },
+  "united_armory.entity.player.attack.crit": {
+    "category": "entity",
+    "sounds": [
+      {
+        "name": "united_armory:weapon/crit",
+        "volume": 1.0,
+        "pitch": 1.0
+      }
+    ]
+  },
+  "united_armory.entity.player.attack.sweep": {
+    "category": "entity",
+    "sounds": [
+      {
+        "name": "united_armory:weapon/sweep",
+        "volume": 1.0,
+        "pitch": 1.0
+      }
+    ]
+  }
+}
