@@ -2,6 +2,7 @@ package com.theendercore.united_armory.init.misc
 
 import com.theendercore.united_armory.UnitedArmory.id
 import com.theendercore.united_armory.init.UADataComponents
+import com.theendercore.united_armory.init.UAParticleTypes
 import com.theendercore.united_armory.init.UASoundsEvents
 import com.theendercore.united_armory.item.UATiers
 import com.theendercore.united_armory.item.component.CustomAttackSounds
@@ -10,7 +11,6 @@ import com.theendercore.united_armory.util.lib.greenModifier
 import net.minecraft.core.Holder
 import net.minecraft.core.component.DataComponents
 import net.minecraft.core.particles.ParticleOptions
-import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.sounds.SoundEvent
 import net.minecraft.world.entity.EquipmentSlotGroup
 import net.minecraft.world.entity.ai.attributes.AttributeModifier
@@ -37,12 +37,12 @@ fun unnamedAnchor(): Properties = Properties()
                 EquipmentSlotGroup.MAINHAND
             )
     )
-    .customSweep(UASoundsEvents.ATTACK_SWEEP, ParticleTypes.EXPLOSION)
+    .customSweep()
     .customSounds()
 
 fun unnamedScythe(): Properties = Properties()
     .attributes(swordAttributes(UATiers.UNNAMED_SCYTHE, -2.6f))
-    .customSweep(UASoundsEvents.ATTACK_SWEEP, ParticleTypes.HEART)
+    .customSweep()
     .customSounds()
 
 
@@ -76,7 +76,7 @@ fun unnamedCrown(): Properties = Properties()
     )
 
 
-
+fun Properties.customSweep() = customSweep(UASoundsEvents.ATTACK_SWEEP, UAParticleTypes.CUSTOM_SWEEP)
 fun Properties.customSweep(sound: Holder<SoundEvent>?, particle: ParticleOptions?) =
     customSweep(CustomSweep(sound, particle))
 

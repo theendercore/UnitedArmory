@@ -29,6 +29,7 @@ object UnitedArmory {
         UADataComponents.init()
         UAItems.init()
         UATabs.init()
+        UAParticleTypes.init()
         UAEntityTypes.init()
         UADataAttachments.init()
         UAMobEffects.init()
