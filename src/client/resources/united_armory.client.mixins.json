@@ -4,7 +4,8 @@
   "package": "com.theendercore.united_armory.mixin.client",
   "compatibilityLevel": "JAVA_21",
   "client": [
-    "LivingEntityRendererMixin"
+    "PhantasmHandRendererMixin",
+    "PhantasmLivingEntityRendererMixin"
   ],
   "injectors": {
     "defaultRequire": 1

@@ -1,4 +1,4 @@
-package com.theendercore.united_armory.mixin;
+package com.theendercore.united_armory.mixin.phantasm;
 
 import com.theendercore.united_armory.effect.RemovableMobEffect;
 import com.theendercore.united_armory.init.UAMobEffects;
@@ -15,7 +15,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
-public abstract class PhantasmEffectMixin {
+public abstract class PhantasmLivingEntityMixin {
     @Shadow
     public abstract boolean hasEffect(Holder<MobEffect> holder);
 
