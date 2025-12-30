@@ -18,7 +18,7 @@ public class LivingEntityRendererMixin {
     @SuppressWarnings({"UnstableApiUsage", "UnresolvedLocalCapture"})
     @ModifyReturnValue(method = "getRenderType", at = @At("RETURN"))
     private RenderType run(@Nullable RenderType original, LivingEntity entity, @Local ResourceLocation id) {
-        var effected = entity.getAttached(UADataAttachments.IFRAME_EFFECT);
+        var effected = entity.getAttached(UADataAttachments.PHANTASM_ATTACHMENT);
         if (Boolean.TRUE.equals(effected)) {
             return RenderType.eyes(id);
         }

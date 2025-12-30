@@ -8,7 +8,7 @@
     "AxeItemMixin",
     "CustomAttackSoundsMixin",
     "CustomSweepMixin",
-    "IframeMixin",
+    "PhantasmEffectMixin",
     "ItemStackMixin",
     "PlayerMixin",
     "ScytheKBMixin"

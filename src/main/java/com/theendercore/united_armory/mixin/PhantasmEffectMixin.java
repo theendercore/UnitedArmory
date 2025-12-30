@@ -1,6 +1,6 @@
 package com.theendercore.united_armory.mixin;
 
-import com.theendercore.united_armory.init.UADataAttachments;
+import com.theendercore.united_armory.effect.RemovableMobEffect;
 import com.theendercore.united_armory.init.UAMobEffects;
 import net.minecraft.core.Holder;
 import net.minecraft.world.damagesource.DamageSource;
@@ -15,20 +15,21 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(LivingEntity.class)
-public abstract class IframeMixin {
+public abstract class PhantasmEffectMixin {
     @Shadow
     public abstract boolean hasEffect(Holder<MobEffect> holder);
 
     @Inject(method = "hurt", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;isSleeping()Z"), cancellable = true)
     void customSwingSound(DamageSource damageSource, float f, CallbackInfoReturnable<Boolean> cir) {
-        if (this.hasEffect(UAMobEffects.UNNAMED_IFRAMES)) {
+        if (hasEffect(UAMobEffects.PHANTASM)) {
             cir.setReturnValue(false);
         }
     }
 
-    @SuppressWarnings("UnstableApiUsage")
     @Inject(method = "onEffectRemoved", at = @At(value = "INVOKE", target = "Lnet/minecraft/world/entity/LivingEntity;refreshDirtyAttributes()V"))
     void customSwingSound(MobEffectInstance mobEffectInstance, CallbackInfo ci) {
-        ((LivingEntity) (Object) this).removeAttached(UADataAttachments.IFRAME_EFFECT);
+        if (mobEffectInstance.getEffect().value() instanceof RemovableMobEffect effect) {
+            effect.onEffectRemove(((LivingEntity) (Object) this));
+        }
     }
 }
