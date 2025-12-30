@@ -1,16 +1,8 @@
 package com.theendercore.united_armory
 
 import com.theendercore.united_armory.init.*
-import com.theendercore.united_armory.util.addAttackTicker
-import com.theendercore.united_armory.util.attackTicker
-import net.fabricmc.fabric.api.event.player.UseItemCallback
 import net.fabricmc.loader.api.FabricLoader
-import net.minecraft.network.chat.Component
 import net.minecraft.resources.ResourceLocation
-import net.minecraft.server.level.ServerPlayer
-import net.minecraft.world.InteractionHand
-import net.minecraft.world.InteractionResultHolder
-import net.minecraft.world.item.ItemStack
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 
@@ -35,7 +27,7 @@ object UnitedArmory {
         UAMobEffects.init()
         UASoundsEvents.init()
 
-        if (isDev()) UseItemCallback.EVENT.register { player, level, hand ->
+      /*  if (isDev()) UseItemCallback.EVENT.register { player, level, hand ->
             if (hand == InteractionHand.MAIN_HAND) {
                 if (player is ServerPlayer) {
                     var str = "Held delay: ${player.currentItemAttackStrengthDelay}"
@@ -48,7 +40,7 @@ object UnitedArmory {
                 player.addAttackTicker(player.currentItemAttackStrengthDelay.toInt() / 2)
             }
             InteractionResultHolder.pass(ItemStack.EMPTY)
-        }
+        }*/
     }
 
     fun id(namespace: String, path: String): ResourceLocation = ResourceLocation.fromNamespaceAndPath(namespace, path)
