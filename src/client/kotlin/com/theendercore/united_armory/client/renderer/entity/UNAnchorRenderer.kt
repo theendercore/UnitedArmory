@@ -35,10 +35,9 @@ class UNAnchorRenderer<T>(context: EntityRendererProvider.Context) :
             stack.pushPose()
             val offset = entity.type.dimensions.height / 2
             stack.translate(0f, offset, 0f)
-            stack.mulPose(Axis.YN.rotationDegrees(Mth.lerp(partialTick, entity.yRotO, entity.yRot)))
-            stack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.xRot)))
-            stack.mulPose(Axis.YN.rotationDegrees(90f))
-            stack.mulPose(Axis.ZN.rotationDegrees(-45f))
+            stack.scale(1.5f, 1.5f, 1.5f)
+            stack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTick, entity.yRotO, entity.yRot) - 90.0F));
+            stack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.xRot) - 135f));
             itemRenderer.renderStatic(
                 entity.item, ItemDisplayContext.FIXED, light,
                 OverlayTexture.NO_OVERLAY, stack, buffer, entity.level(), entity.id

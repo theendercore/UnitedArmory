@@ -2,6 +2,7 @@ package com.theendercore.united_armory.init
 
 import com.theendercore.united_armory.UnitedArmory.id
 import com.theendercore.united_armory.entity.UnnamesAnchorProjectile
+import com.theendercore.united_armory.entity.UnnamesAnchorProjectile2
 import net.minecraft.core.Registry
 import net.minecraft.core.registries.BuiltInRegistries
 import net.minecraft.world.entity.Entity
@@ -16,6 +17,11 @@ object UAEntityTypes {
     val UNNAMES_ANCHOR = register(
         "hammer_head", EntityType.Builder.of(::UnnamesAnchorProjectile, MobCategory.MISC)
             .sized(0.5f, 0.5f)
+            .noSummon()
+    )
+    val UNNAMES_ANCHOR2 = register(
+        "unnames_anchor", EntityType.Builder.of(::UnnamesAnchorProjectile2, MobCategory.MISC)
+            .sized(0.75f, 0.75f)
             .noSummon()
     )
 

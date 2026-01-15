@@ -1,7 +1,6 @@
 package com.theendercore.united_armory.item
 
-import com.theendercore.united_armory.entity.UnnamesAnchorProjectile
-import com.theendercore.united_armory.init.UADataAttachments.THROWN_ANCHOR
+import com.theendercore.united_armory.entity.UnnamesAnchorProjectile2
 import net.minecraft.tags.BlockTags
 import net.minecraft.world.InteractionHand
 import net.minecraft.world.InteractionResultHolder
@@ -22,24 +21,33 @@ class UnnamedAnchor(tier: Tier, properties: Properties) : SwordItem(tier, proper
     ): InteractionResultHolder<ItemStack> {
         var result = super.use(level, player, interactionHand)
         if (!result.result.consumesAction()) {
-            val id = player.getAttached(THROWN_ANCHOR)
-            if (id == null) {
-                val stack = player.getItemInHand(interactionHand)
+//            val id = player.getAttached(THROWN_ANCHOR)
+//            if (id == null) {
+            val stack = player.getItemInHand(interactionHand)
 
-                val anchor = UnnamesAnchorProjectile(player, level, player.getViewVector(1.0f), stack)
-                if (player.deltaMovement.length() > 0.1) {
-                    anchor.deltaMovement = anchor.deltaMovement.add(player.deltaMovement)
-                    anchor.hasImpulse = true
-                }
-                level.addFreshEntity(anchor)
-                player.setAttached(THROWN_ANCHOR, anchor.id)
-                result = InteractionResultHolder.success(stack)
-            } else {
-                val anchor = level.getEntity(id)
-                if (anchor is UnnamesAnchorProjectile && anchor.state == UnnamesAnchorProjectile.AnchorState.HOLDING) {
-                    anchor.kill()
-                }
-            }
+//            val anchor = UnnamesAnchorProjectile(player, level, player.getViewVector(1.0f), stack)
+//            if (player.deltaMovement.length() > 0.1) {
+//                anchor.deltaMovement = anchor.deltaMovement.add(player.deltaMovement)
+//                anchor.hasImpulse = true
+//            }
+//            level.addFreshEntity(anchor)
+//            player.setAttached(THROWN_ANCHOR, anchor.id)
+            val anchor2 = UnnamesAnchorProjectile2(level, player, stack)
+            val dir = player.getViewVector(1f)
+            anchor2.shootFromRotation(player,player.xRot, player.yRot , 0.0F, 2f, 1f)
+            anchor2.setPos(
+                player.x + dir.x,
+                player.eyePosition.y + (dir.y) - (anchor2.type.dimensions.height / 2),
+                player.z + dir.z,
+            )
+            level.addFreshEntity(anchor2)
+            result = InteractionResultHolder.success(stack)
+//            } else {
+//                val anchor = level.getEntity(id)
+//                if (anchor is UnnamesAnchorProjectile && anchor.state == UnnamesAnchorProjectile.AnchorState.HOLDING) {
+//                    anchor.kill()
+//                }
+//            }
         }
         return result
     }
