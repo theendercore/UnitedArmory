@@ -16,6 +16,7 @@ import net.minecraft.server.level.ServerEntity
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
+import net.minecraft.util.StringRepresentable
 import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.EntityType
@@ -70,7 +71,7 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
     open var liquidInertia = inertia
 
     // Custom
-    open var hasHit = false
+    open var state = AnchorState.SHOOTING
     open var maxDistance = 20
 
     override fun defineSynchedData(builder: SynchedEntityData.Builder) {
@@ -85,10 +86,18 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
             return
         }
         super.tick()
-
-        if (!hasHit && position().distanceTo(ownerPos()) < maxDistance) {
-            move()
+        if (state.shouldMove()) {
+            if (state != AnchorState.RETRACTING && position().distanceTo(ownerPos()) >= maxDistance) {
+                makeRetract()
+            } else {
+                if (ownerPos().subtract(position()).length() <= 0.1) {
+                    discard()
+                }
+                move()
+            }
+            modifyMoveDelta()
         }
+
 
         // To owner particles
         val amount = ownerPos().distanceTo(position()) * 3
@@ -100,6 +109,45 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
         // Center Pos particles
         val vec = position().add(0.0, type.height / 2.0, 0.0)
         level().addParticle(ParticleTypes.OMINOUS_SPAWNING, vec.x, vec.y, vec.z, 0.0, 0.0, 0.0)
+    }
+
+    private fun modifyMoveDelta() {
+        if (level().isClientSide || level().hasChunkAt(blockPosition())) {
+            var delta = deltaMovement
+            var mInertia = inertia
+            if (isInWater) {
+                val modX = x + delta.x
+                val modY = y + delta.y
+                val modZ = z + delta.z
+                val scale = 0.25f
+                repeat(3) {
+                    level().addParticle(
+                        ParticleTypes.BUBBLE,
+                        modX - delta.x * scale, modY - delta.y * scale, modZ - delta.z * scale,
+                        delta.x, delta.y, delta.z
+                    )
+                }
+                mInertia = liquidInertia
+            }
+
+            when (state) {
+                AnchorState.SHOOTING -> {
+                    delta = delta.add(delta.normalize().scale(accelerationPower)).scale(mInertia)
+                }
+
+                AnchorState.RETRACTING -> {
+                    delta = ownerPos().subtract(position()).normalize().scale(inertia)
+                }
+
+                AnchorState.HOLDING -> Unit
+            }
+
+            deltaMovement = delta
+        }
+    }
+
+    fun makeRetract() {
+        state = AnchorState.RETRACTING
     }
 
     fun ownerPos(): Vec3 {
@@ -121,20 +169,6 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
             val modY = y + dMove.y
             val modZ = z + dMove.z
             ProjectileUtil.rotateTowardsMovement(this, 0.2f)
-            var mInertia = inertia
-            if (isInWater) {
-                val scale = 0.25f
-                repeat(3) {
-                    level().addParticle(
-                        ParticleTypes.BUBBLE,
-                        modX - dMove.x * scale, modY - dMove.y * scale, modZ - dMove.z * scale,
-                        dMove.x, dMove.y, dMove.z
-                    )
-                }
-                mInertia = liquidInertia
-            }
-
-            deltaMovement = dMove.add(dMove.normalize().scale(accelerationPower)).scale(mInertia)
             setPos(modX, modY, modZ)
         }
     }
@@ -186,6 +220,14 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
     }
 
     override fun onHitEntity(result: EntityHitResult) {
+        val target = result.entity
+        if (target == owner) {
+            discard()
+            return
+        }
+        if (state == AnchorState.RETRACTING) {
+            return
+        }
         super.onHitEntity(result)
         val vec3 = result.getLocation().subtract(x, y, z)
 //        deltaMovement = vec3
@@ -193,24 +235,23 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
         if (level() is ServerLevel) {
 //            hitBlockEnchantmentEffects(serverLevel, result, itemStack)
         }
-        val target = result.entity
         if (target is LivingEntity) {
             target.addEffect(MobEffectInstance(MobEffects.LEVITATION, 4 * 20))
-        }
-        if (target == owner) {
-            discard()
         }
 
         val vec32 = vec3.normalize().scale(0.05)
         setPosRaw(x - vec32.x, y - vec32.y, z - vec32.z)
 //        playSound(getHitGroundSoundEvent(), 1.0f, 1.2f / (random.nextFloat() * 0.2f + 0.9f))
-        hasHit = true
-        deltaMovement = Vec3.ZERO
+        makeRetract()
+//        deltaMovement = Vec3.ZERO
 
         level().broadcastEntityEvent(this, 3.toByte())
     }
 
     override fun onHitBlock(result: BlockHitResult) {
+        if (state == AnchorState.RETRACTING) {
+            return
+        }
         super.onHitBlock(result)
         val vec3 = result.getLocation().subtract(x, y, z)
         deltaMovement = vec3
@@ -222,7 +263,7 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
         val vec32 = vec3.normalize().scale(0.05)
         setPosRaw(x - vec32.x, y - vec32.y, z - vec32.z)
 //        playSound(getHitGroundSoundEvent(), 1.0f, 1.2f / (random.nextFloat() * 0.2f + 0.9f))
-        hasHit = true
+        makeRetract()
         deltaMovement = Vec3.ZERO
 
         level().broadcastEntityEvent(this, 3.toByte())
@@ -239,18 +280,28 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
     override fun addAdditionalSaveData(nbt: CompoundTag) {
         super.addAdditionalSaveData(nbt)
         nbt.put(WEAPON, weapon.save(registryAccess()))
-        nbt.putBoolean(HAS_HIT, hasHit)
+        nbt.putString(ANCHOR_STATE, state.getSerializedName())
     }
 
     override fun readAdditionalSaveData(nbt: CompoundTag) {
         super.readAdditionalSaveData(nbt)
         weapon = ItemStack.parse(registryAccess(), nbt.getCompound(WEAPON)).orElse(defaultWeapon())
-        hasHit = nbt.getBoolean(HAS_HIT)
+        state = AnchorState.valueOf(nbt.getString(ANCHOR_STATE).uppercase())
+    }
+
+    enum class AnchorState : StringRepresentable {
+        SHOOTING,
+        RETRACTING,
+        HOLDING;
+
+        override fun getSerializedName(): String = name.lowercase()
+
+        fun shouldMove() = this != HOLDING
     }
 
     companion object {
         const val WEAPON = "weapon"
-        const val HAS_HIT = "has_hit"
+        const val ANCHOR_STATE = "anchor_state"
 
         val DATA_ITEM_STACK: EntityDataAccessor<ItemStack> =
             SynchedEntityData.defineId(UnnamesAnchorProjectile::class.java, EntityDataSerializers.ITEM_STACK)
