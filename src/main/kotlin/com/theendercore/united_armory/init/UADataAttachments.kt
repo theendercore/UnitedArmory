@@ -17,6 +17,10 @@ object UADataAttachments {
     val PHANTASM_ATTACHMENT =
         register("phantasm_attachment") { it.persistent(Codec.BOOL).syncWith(ByteBufCodecs.BOOL, syncAllPredicate()) }
 
+
+    @JvmField
+    val THROWN_ANCHOR = register("thrown_anchor") { it.syncWith(ByteBufCodecs.INT, syncAllPredicate()) }
+
     @JvmField
     val DASH_DATA =
         register("dash_data") { it.persistent(DashData.CODEC).syncWith(DashData.STREAM_CODEC, syncAllPredicate()) }

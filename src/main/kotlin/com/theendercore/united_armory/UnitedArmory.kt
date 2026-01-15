@@ -27,20 +27,22 @@ object UnitedArmory {
         UAMobEffects.init()
         UASoundsEvents.init()
 
-      /*  if (isDev()) UseItemCallback.EVENT.register { player, level, hand ->
-            if (hand == InteractionHand.MAIN_HAND) {
-                if (player is ServerPlayer) {
-                    var str = "Held delay: ${player.currentItemAttackStrengthDelay}"
-                    str += "\nScale: ${player.getAttackStrengthScale(0f)}"
-                    str += "\nTicker: ${player.attackTicker()}"
-                    val value = player.currentItemAttackStrengthDelay * player.getAttackStrengthScale(0f)
-                    str += "\nValue: $value, Remainder: ${player.currentItemAttackStrengthDelay - value}"
-                    player.sendSystemMessage(Component.literal(str))
-                }
-                player.addAttackTicker(player.currentItemAttackStrengthDelay.toInt() / 2)
-            }
-            InteractionResultHolder.pass(ItemStack.EMPTY)
-        }*/
+        UAFabricEvents.init()
+
+        /*  if (isDev()) UseItemCallback.EVENT.register { player, level, hand ->
+              if (hand == InteractionHand.MAIN_HAND) {
+                  if (player is ServerPlayer) {
+                      var str = "Held delay: ${player.currentItemAttackStrengthDelay}"
+                      str += "\nScale: ${player.getAttackStrengthScale(0f)}"
+                      str += "\nTicker: ${player.attackTicker()}"
+                      val value = player.currentItemAttackStrengthDelay * player.getAttackStrengthScale(0f)
+                      str += "\nValue: $value, Remainder: ${player.currentItemAttackStrengthDelay - value}"
+                      player.sendSystemMessage(Component.literal(str))
+                  }
+                  player.addAttackTicker(player.currentItemAttackStrengthDelay.toInt() / 2)
+              }
+              InteractionResultHolder.pass(ItemStack.EMPTY)
+          }*/
     }
 
     fun id(namespace: String, path: String): ResourceLocation = ResourceLocation.fromNamespaceAndPath(namespace, path)
