@@ -6,12 +6,16 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
+import net.minecraft.server.level.ServerLevel
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.projectile.ItemSupplier
 import net.minecraft.world.entity.projectile.Projectile
+import net.minecraft.world.item.Item
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.enchantment.EnchantmentHelper
 import net.minecraft.world.level.Level
+import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.Vec3
 
 open class WeaponProjectile : Projectile, ItemSupplier {
@@ -57,6 +61,14 @@ open class WeaponProjectile : Projectile, ItemSupplier {
         weapon = ItemStack.parse(registryAccess(), nbt.getCompound(WEAPON)).orElse(defaultWeapon())
     }
 
+
+    open fun hitBlockEnchantmentEffects(level: ServerLevel, result: BlockHitResult, weaponStack: ItemStack) {
+        val location = result.blockPos.clampLocationWithin(result.getLocation())
+        EnchantmentHelper.onHitBlock(
+            level, weaponStack, owner as? LivingEntity, this, null, location,
+            level.getBlockState(result.blockPos)
+        ) { _: Item? -> kill() }
+    }
 
     companion object {
         const val WEAPON = "weapon"

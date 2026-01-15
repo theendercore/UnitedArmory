@@ -13,12 +13,11 @@ import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
 import net.minecraft.util.StringRepresentable
-import net.minecraft.world.effect.MobEffectInstance
-import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.projectile.ProjectileUtil
 import net.minecraft.world.item.ItemStack
+import net.minecraft.world.item.enchantment.EnchantmentHelper
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
@@ -88,6 +87,7 @@ open class UnnamesAnchorProjectile : WeaponProjectile {
         level().addParticle(ParticleTypes.OMINOUS_SPAWNING, vec.x, vec.y, vec.z, 0.0, 0.0, 0.0)
     }
 
+    @Suppress("DEPRECATION")
     private fun modifyMoveDelta() {
         if (level().isClientSide || level().hasChunkAt(blockPosition())) {
             var delta = deltaMovement
@@ -204,20 +204,23 @@ open class UnnamesAnchorProjectile : WeaponProjectile {
         }
         super.onHitEntity(result)
         val vec3 = result.getLocation().subtract(x, y, z)
-//        deltaMovement = vec3
-//        val itemStack = weaponItem
+
+        val damageSource = damageSources().mobProjectile(this, owner as? LivingEntity)
+        target.hurt(damageSource, 5f)
+
         if (level() is ServerLevel) {
-//            hitBlockEnchantmentEffects(serverLevel, result, itemStack)
-        }
-        if (target is LivingEntity) {
-            target.addEffect(MobEffectInstance(MobEffects.LEVITATION, 4 * 20))
+            EnchantmentHelper.doPostAttackEffectsWithItemSource(
+                level() as ServerLevel,
+                target,
+                damageSource,
+                weaponItem
+            )
         }
 
         val vec32 = vec3.normalize().scale(0.05)
         setPosRaw(x - vec32.x, y - vec32.y, z - vec32.z)
-//        playSound(getHitGroundSoundEvent(), 1.0f, 1.2f / (random.nextFloat() * 0.2f + 0.9f))
+//        playSound(getHitSoundEvent(), 1.0f, 1.2f / (random.nextFloat() * 0.2f + 0.9f))
         makeRetract()
-//        deltaMovement = Vec3.ZERO
 
         level().broadcastEntityEvent(this, 3.toByte())
     }
@@ -227,16 +230,14 @@ open class UnnamesAnchorProjectile : WeaponProjectile {
         super.onHitBlock(result)
         val vec3 = result.getLocation().subtract(x, y, z)
         deltaMovement = vec3
-        val itemStack = weaponItem
         if (level() is ServerLevel) {
-//            hitBlockEnchantmentEffects(serverLevel, result, itemStack)
+            hitBlockEnchantmentEffects(level() as ServerLevel, result, weaponItem)
         }
 
         val vec32 = vec3.normalize().scale(0.05)
         setPosRaw(x - vec32.x, y - vec32.y, z - vec32.z)
 //        playSound(getHitGroundSoundEvent(), 1.0f, 1.2f / (random.nextFloat() * 0.2f + 0.9f))
         makeRetract()
-        deltaMovement = Vec3.ZERO
 
         level().broadcastEntityEvent(this, 3.toByte())
     }
