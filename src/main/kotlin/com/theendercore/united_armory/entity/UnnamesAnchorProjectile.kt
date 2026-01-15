@@ -1,9 +1,11 @@
 package com.theendercore.united_armory.entity
 
+import com.theendercore.united_armory.data.UAEnchantments
 import com.theendercore.united_armory.init.UADataAttachments.THROWN_ANCHOR
 import com.theendercore.united_armory.init.UAEntityTypes
-import net.minecraft.core.particles.ItemParticleOption
+import net.minecraft.core.component.DataComponents
 import net.minecraft.core.particles.ParticleTypes
+import net.minecraft.core.registries.Registries
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientGamePacketListener
@@ -11,7 +13,6 @@ import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
 import net.minecraft.server.level.ServerEntity
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
-import net.minecraft.sounds.SoundSource
 import net.minecraft.util.Mth
 import net.minecraft.util.StringRepresentable
 import net.minecraft.world.entity.EntityType
@@ -74,6 +75,11 @@ open class UnnamesAnchorProjectile : WeaponProjectile {
                 move()
             }
             modifyMoveDelta()
+        } else {
+            owner!!.deltaMovement =
+                owner!!.deltaMovement.add(position().subtract(ownerPos()).normalize().scale(inertia))
+            owner!!.hasImpulse = true
+            owner!!.resetFallDistance()
         }
 
         val dX: Double = deltaMovement.x
@@ -117,16 +123,18 @@ open class UnnamesAnchorProjectile : WeaponProjectile {
                 mInertia = liquidInertia
             }
 
-            when (state) {
+            delta = when (state) {
                 AnchorState.SHOOTING -> {
-                    delta = delta.add(delta.normalize().scale(accelerationPower)).scale(mInertia)
+                    delta.add(delta.normalize().scale(accelerationPower)).scale(mInertia)
                 }
 
                 AnchorState.RETRACTING -> {
-                    delta = ownerPos().subtract(position()).normalize().scale(inertia)
+                    ownerPos().subtract(position()).normalize().scale(inertia)
                 }
 
-                AnchorState.HOLDING -> Unit
+                AnchorState.HOLDING -> {
+                    Vec3.ZERO
+                }
             }
 
             deltaMovement = delta
@@ -184,25 +192,6 @@ open class UnnamesAnchorProjectile : WeaponProjectile {
         if (owner == null) discard()
     }
 
-    override fun handleEntityEvent(b: Byte) {
-        super.handleEntityEvent(b)
-        when (b) {
-            3.toByte() -> {
-                val scale = 0.08
-                repeat(8) {
-                    level().addParticle(
-                        ItemParticleOption(ParticleTypes.ITEM, item),
-                        x, y, z,
-                        (random.nextFloat() - 0.5) * scale,
-                        (random.nextFloat() - 0.5) * scale,
-                        (random.nextFloat() - 0.5) * scale
-                    )
-                    level().playSound(null, x, y, z, SoundEvents.GENERIC_EXPLODE.value(), SoundSource.PLAYERS)
-                }
-            }
-        }
-    }
-
     override fun onHitEntity(result: EntityHitResult) {
         val target = result.entity
         if (target == owner) {
@@ -229,10 +218,8 @@ open class UnnamesAnchorProjectile : WeaponProjectile {
 
         val vec32 = vec3.normalize().scale(0.05)
         setPosRaw(x - vec32.x, y - vec32.y, z - vec32.z)
-//        playSound(getHitSoundEvent(), 1.0f, 1.2f / (random.nextFloat() * 0.2f + 0.9f))
+        playSound(SoundEvents.TRIDENT_HIT, 1.0f, 1.2f / (random.nextFloat() * 0.2f + 0.9f))
         makeRetract()
-
-        level().broadcastEntityEvent(this, 3.toByte())
     }
 
     override fun onHitBlock(result: BlockHitResult) {
@@ -246,11 +233,18 @@ open class UnnamesAnchorProjectile : WeaponProjectile {
 
         val vec32 = vec3.normalize().scale(0.05)
         setPosRaw(x - vec32.x, y - vec32.y, z - vec32.z)
-//        playSound(getHitGroundSoundEvent(), 1.0f, 1.2f / (random.nextFloat() * 0.2f + 0.9f))
-//        makeRetract()
-        state = AnchorState.HOLDING
+        playSound(SoundEvents.TRIDENT_HIT_GROUND, 1.0f, 1.2f / (random.nextFloat() * 0.2f + 0.9f))
+        val enchants = weapon.get(DataComponents.ENCHANTMENTS)
 
-        level().broadcastEntityEvent(this, 3.toByte())
+        val lookup = level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
+        val reeling = enchants?.getLevel(lookup.getOrThrow(UAEnchantments.TEMP_REELING)) ?: 0
+        if (reeling > 0) state = AnchorState.HOLDING
+        else makeRetract()
+
+        val shock = enchants?.getLevel(lookup.getOrThrow(UAEnchantments.TEMP_SHOCKWAVE)) ?: 0
+        if (shock > 0) {
+
+        }
     }
 
     @Suppress("UnstableApiUsage")
