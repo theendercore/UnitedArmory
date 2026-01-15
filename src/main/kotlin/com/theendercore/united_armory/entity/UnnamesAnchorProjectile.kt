@@ -2,16 +2,12 @@ package com.theendercore.united_armory.entity
 
 import com.theendercore.united_armory.init.UADataAttachments.THROWN_ANCHOR
 import com.theendercore.united_armory.init.UAEntityTypes
-import com.theendercore.united_armory.init.UAItems
 import net.minecraft.core.particles.ItemParticleOption
 import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.nbt.CompoundTag
 import net.minecraft.network.protocol.Packet
 import net.minecraft.network.protocol.game.ClientGamePacketListener
 import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
-import net.minecraft.network.syncher.EntityDataAccessor
-import net.minecraft.network.syncher.EntityDataSerializers
-import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.level.ServerEntity
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
@@ -21,8 +17,6 @@ import net.minecraft.world.effect.MobEffectInstance
 import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.entity.projectile.ItemSupplier
-import net.minecraft.world.entity.projectile.Projectile
 import net.minecraft.world.entity.projectile.ProjectileUtil
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.level.Level
@@ -31,16 +25,14 @@ import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 
-open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
+open class UnnamesAnchorProjectile : WeaponProjectile {
     constructor(type: EntityType<out UnnamesAnchorProjectile>, level: Level) : super(type, level)
 
     constructor(
         entityType: EntityType<out UnnamesAnchorProjectile>,
         owner: LivingEntity, level: Level, dir: Vec3, stack: ItemStack,
-    ) : this(entityType, level) {
-        this.owner = owner
+    ) : super(entityType, owner, level, stack) {
         var offset = 1f
-        weapon = stack
         moveTo(
             owner.x + dir.x * offset,
             owner.eyePosition.y + (dir.y * offset) - (type.dimensions.height / 2),
@@ -55,16 +47,6 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
         UAEntityTypes.UNNAMES_ANCHOR, owner, level, dir, stack
     )
 
-    open fun defaultWeapon(): ItemStack = UAItems.UNNAMED_ANCHOR.defaultInstance
-    var weapon: ItemStack
-        get() = entityData.get(DATA_ITEM_STACK)
-        set(value) {
-            entityData.set(DATA_ITEM_STACK, value)
-        }
-
-    override fun getWeaponItem(): ItemStack = weapon
-    override fun getItem(): ItemStack = weapon
-
     // Default
     open var accelerationPower = 0.025
     open var inertia = 0.94
@@ -73,11 +55,6 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
     // Custom
     open var state = AnchorState.SHOOTING
     open var maxDistance = 20
-
-    override fun defineSynchedData(builder: SynchedEntityData.Builder) {
-        builder.define(DATA_ITEM_STACK, defaultWeapon())
-    }
-
 
     override fun tick() {
         val own = owner
@@ -144,6 +121,7 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
 
             deltaMovement = delta
         }
+        hasImpulse = true
     }
 
     fun makeRetract() {
@@ -172,10 +150,6 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
             setPos(modX, modY, modZ)
         }
     }
-
-    open fun findHitEntity(pos: Vec3, nextPos: Vec3): EntityHitResult? = ProjectileUtil.getEntityHitResult(
-        level(), this, pos, nextPos, boundingBox.expandTowards(deltaMovement).inflate(1.0), ::canHitEntity
-    )
 
     open fun assignDirectionalMovement(dir: Vec3, scale: Double) {
         deltaMovement = dir.normalize().scale(scale)
@@ -249,9 +223,7 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
     }
 
     override fun onHitBlock(result: BlockHitResult) {
-        if (state == AnchorState.RETRACTING) {
-            return
-        }
+        if (state == AnchorState.RETRACTING) return
         super.onHitBlock(result)
         val vec3 = result.getLocation().subtract(x, y, z)
         deltaMovement = vec3
@@ -279,13 +251,11 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
 
     override fun addAdditionalSaveData(nbt: CompoundTag) {
         super.addAdditionalSaveData(nbt)
-        nbt.put(WEAPON, weapon.save(registryAccess()))
         nbt.putString(ANCHOR_STATE, state.getSerializedName())
     }
 
     override fun readAdditionalSaveData(nbt: CompoundTag) {
         super.readAdditionalSaveData(nbt)
-        weapon = ItemStack.parse(registryAccess(), nbt.getCompound(WEAPON)).orElse(defaultWeapon())
         state = AnchorState.valueOf(nbt.getString(ANCHOR_STATE).uppercase())
     }
 
@@ -300,10 +270,6 @@ open class UnnamesAnchorProjectile : Projectile, ItemSupplier {
     }
 
     companion object {
-        const val WEAPON = "weapon"
         const val ANCHOR_STATE = "anchor_state"
-
-        val DATA_ITEM_STACK: EntityDataAccessor<ItemStack> =
-            SynchedEntityData.defineId(UnnamesAnchorProjectile::class.java, EntityDataSerializers.ITEM_STACK)
     }
 }
