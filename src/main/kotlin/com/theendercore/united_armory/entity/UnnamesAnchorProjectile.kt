@@ -1,62 +1,71 @@
 package com.theendercore.united_armory.entity
 
 import com.theendercore.united_armory.data.UAEnchantments
-import com.theendercore.united_armory.init.UADataAttachments.THROWN_ANCHOR
 import com.theendercore.united_armory.init.UAEntityTypes
-import net.minecraft.core.component.DataComponents
-import net.minecraft.core.particles.ParticleTypes
-import net.minecraft.core.registries.Registries
-import net.minecraft.nbt.CompoundTag
-import net.minecraft.network.protocol.Packet
-import net.minecraft.network.protocol.game.ClientGamePacketListener
-import net.minecraft.network.protocol.game.ClientboundAddEntityPacket
-import net.minecraft.server.level.ServerEntity
+import com.theendercore.united_armory.init.UAItems
+import com.theendercore.united_armory.util.getEnchantLevel
+import net.minecraft.network.syncher.EntityDataAccessor
+import net.minecraft.network.syncher.EntityDataSerializers
+import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.util.Mth
-import net.minecraft.util.StringRepresentable
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
-import net.minecraft.world.entity.projectile.ProjectileUtil
+import net.minecraft.world.entity.player.Player
+import net.minecraft.world.entity.projectile.AbstractArrow
+import net.minecraft.world.entity.projectile.ItemSupplier
 import net.minecraft.world.item.ItemStack
 import net.minecraft.world.item.enchantment.EnchantmentHelper
 import net.minecraft.world.level.Level
 import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
-import net.minecraft.world.phys.HitResult
 import net.minecraft.world.phys.Vec3
 
-open class UnnamesAnchorProjectile : WeaponProjectile {
-    constructor(type: EntityType<out UnnamesAnchorProjectile>, level: Level) : super(type, level)
-
-    constructor(
-        entityType: EntityType<out UnnamesAnchorProjectile>,
-        owner: LivingEntity, level: Level, dir: Vec3, stack: ItemStack,
-    ) : super(entityType, owner, level, stack) {
-        var offset = 1f
-        moveTo(
-            owner.x + dir.x * offset,
-            owner.eyePosition.y + (dir.y * offset) - (type.dimensions.height / 2),
-            owner.z + dir.z * offset,
-            0f, 0f
-//            owner.yRot, owner.xRot,
-        )
-        reapplyPosition()
-        assignDirectionalMovement(dir, 2.0)
+open class UnnamesAnchorProjectile : AbstractArrow, ItemSupplier {
+    constructor(entityType: EntityType<out UnnamesAnchorProjectile>, level: Level) : super(entityType, level)
+    constructor(level: Level, owner: LivingEntity, weapon: ItemStack) : super(UAEntityTypes.UNNAMES_ANCHOR, level) {
+        setOwner(owner)
+        this.weapon = weapon.copy()
+        isNoGravity = true
     }
 
-    constructor(owner: LivingEntity, level: Level, dir: Vec3, stack: ItemStack) : this(
-        UAEntityTypes.UNNAMES_ANCHOR, owner, level, dir, stack
-    )
+    override fun getDefaultPickupItem(): ItemStack = getItem()
+    override fun tryPickup(player: Player?): Boolean = player == owner
+    override fun playerTouch(player: Player) {
+        if (!level().isClientSide && (inGround || isNoPhysics || isReturning) && tryPickup(player)) {
+            discard()
+        }
+    }
 
-    // Default
-    open var accelerationPower = 0.025
-    open var inertia = 0.94
-    open var liquidInertia = inertia
+    override fun getWeaponItem(): ItemStack = weapon
+    override fun getItem(): ItemStack = weapon
+    var weapon: ItemStack
+        get() = entityData.get(WEAPON_DATA)
+        set(value) {
+            entityData.set(WEAPON_DATA, value)
+        }
+    var isReturning: Boolean
+        get() = entityData.get(RETURNING_DATA)
+        set(value) {
+            entityData.set(RETURNING_DATA, value)
+        }
 
-    // Custom
-    open var state = AnchorState.SHOOTING
-    open var maxDistance = 20
+    open val smashRadius = 4.5
+
+    override fun defineSynchedData(builder: SynchedEntityData.Builder) {
+        super.defineSynchedData(builder)
+        builder.define(WEAPON_DATA, UAItems.UNNAMED_ANCHOR.defaultInstance)
+        builder.define(RETURNING_DATA, false)
+    }
+
+    override fun setYRot(f: Float) {
+        if (!isReturning) super.setYRot(f)
+    }
+
+    override fun setXRot(f: Float) {
+        if (!isReturning) super.setXRot(f)
+    }
 
     override fun tick() {
         val own = owner
@@ -64,86 +73,23 @@ open class UnnamesAnchorProjectile : WeaponProjectile {
             discard()
             return
         }
-        super.tick()
-        if (state.shouldMove()) {
-            if (state != AnchorState.RETRACTING && position().distanceTo(ownerPos()) >= maxDistance) {
-                makeRetract()
-            } else {
-                if (ownerPos().subtract(position()).length() <= 0.1) {
-                    discard()
-                }
-                move()
-            }
-            modifyMoveDelta()
-        } else {
-            owner!!.deltaMovement =
-                owner!!.deltaMovement.add(position().subtract(ownerPos()).normalize().scale(inertia))
+
+        if (position().distanceTo(ownerPos()) >= 25) {
+            isReturning = true
+        }
+
+        if (isReturning) {
+            noPhysics = true
+            deltaMovement = deltaMovement.add(ownerPos().subtract(position()).normalize().scale(0.95))
+            hasImpulse = true
+        }
+
+        if (inGround && canReal()) {
+            owner!!.deltaMovement = owner!!.deltaMovement.add(position().subtract(ownerPos()).normalize().scale(0.95))
             owner!!.hasImpulse = true
             owner!!.resetFallDistance()
         }
-
-        val dX: Double = deltaMovement.x
-        val dY: Double = deltaMovement.y
-        val dZ: Double = deltaMovement.z
-        val l: Double = deltaMovement.horizontalDistance()
-        yRot = (Mth.atan2(dX, dZ) * 180.0f / Math.PI.toFloat()).toFloat()
-
-        xRot = (Mth.atan2(dY, l) * 180.0f / Math.PI.toFloat()).toFloat()
-        xRot = lerpRotation(xRotO, xRot)
-        yRot = lerpRotation(yRotO, yRot)
-        /* // To owner particles
-         val amount = ownerPos().distanceTo(position()) * 3
-         repeat(amount.toInt()) {
-             val pos2 = ownerPos().lerp(position(), it / amount)
-             level().addParticle(ParticleTypes.ELECTRIC_SPARK, pos2.x, pos2.y, pos2.z, 0.0, 0.0, 0.0)
-         }
-
-         // Center Pos particles
-         val vec = position().add(0.0, type.height / 2.0, 0.0)
-         level().addParticle(ParticleTypes.OMINOUS_SPAWNING, vec.x, vec.y, vec.z, 0.0, 0.0, 0.0)*/
-    }
-
-    @Suppress("DEPRECATION")
-    private fun modifyMoveDelta() {
-        if (level().isClientSide || level().hasChunkAt(blockPosition())) {
-            var delta = deltaMovement
-            var mInertia = inertia
-            if (isInWater) {
-                val modX = x + delta.x
-                val modY = y + delta.y
-                val modZ = z + delta.z
-                val scale = 0.25f
-                repeat(3) {
-                    level().addParticle(
-                        ParticleTypes.BUBBLE,
-                        modX - delta.x * scale, modY - delta.y * scale, modZ - delta.z * scale,
-                        delta.x, delta.y, delta.z
-                    )
-                }
-                mInertia = liquidInertia
-            }
-
-            delta = when (state) {
-                AnchorState.SHOOTING -> {
-                    delta.add(delta.normalize().scale(accelerationPower)).scale(mInertia)
-                }
-
-                AnchorState.RETRACTING -> {
-                    ownerPos().subtract(position()).normalize().scale(inertia)
-                }
-
-                AnchorState.HOLDING -> {
-                    Vec3.ZERO
-                }
-            }
-
-            deltaMovement = delta
-        }
-        hasImpulse = true
-    }
-
-    fun makeRetract() {
-        state = AnchorState.RETRACTING
+        super.tick()
     }
 
     fun ownerPos(): Vec3 {
@@ -151,131 +97,69 @@ open class UnnamesAnchorProjectile : WeaponProjectile {
         return own.position().add(0.0, own.type.dimensions.height / 2.0, 0.0)
     }
 
-    @Suppress("DEPRECATION")
-    fun move() {
-        if (level().isClientSide || level().hasChunkAt(blockPosition())) {
-            val hitResult = ProjectileUtil.getHitResultOnMoveVector(this, ::canHitEntity)
-            if (hitResult.type != HitResult.Type.MISS) {
-                hitTargetOrDeflectSelf(hitResult)
-            }
-
-            checkInsideBlocks()
-            val dMove = deltaMovement
-            val modX = x + dMove.x
-            val modY = y + dMove.y
-            val modZ = z + dMove.z
-            ProjectileUtil.rotateTowardsMovement(this, 0.2f)
-            setPos(modX, modY, modZ)
-        }
-    }
-
-    open fun assignDirectionalMovement(dir: Vec3, scale: Double) {
-        deltaMovement = dir.normalize().scale(scale)
-        hasImpulse = true
-    }
-
-    override fun getAddEntityPacket(entity: ServerEntity): Packet<ClientGamePacketListener> {
-        val ownerId = owner?.id ?: 0
-        val pos = entity.positionBase
-        return ClientboundAddEntityPacket(
-            id, getUUID(),
-            pos.x(), pos.y(), pos.z(),
-            entity.lastSentXRot, entity.lastSentYRot,
-            type, ownerId, entity.lastSentMovement,
-            0.0
-        )
-    }
-
-    override fun recreateFromPacket(packet: ClientboundAddEntityPacket) {
-        super.recreateFromPacket(packet)
-        deltaMovement = Vec3(packet.xa, packet.ya, packet.za)
-        if (owner == null) discard()
-    }
 
     override fun onHitEntity(result: EntityHitResult) {
-        val target = result.entity
-        if (target == owner) {
+        val entity = result.entity
+        if (entity == owner) {
             discard()
             return
         }
-        if (state == AnchorState.RETRACTING) {
-            return
-        }
-        super.onHitEntity(result)
-        val vec3 = result.getLocation().subtract(x, y, z)
 
-        val damageSource = damageSources().mobProjectile(this, owner as? LivingEntity)
-        target.hurt(damageSource, 5f)
-
+        var f = 8.0f
+        val entity2 = owner
+        val damageSource = damageSources().trident(this, (entity2 ?: this))
         if (level() is ServerLevel) {
-            EnchantmentHelper.doPostAttackEffectsWithItemSource(
-                level() as ServerLevel,
-                target,
-                damageSource,
-                weaponItem
-            )
+            f = EnchantmentHelper.modifyDamage(level() as ServerLevel, getWeaponItem(), entity, damageSource, f)
         }
 
-        val vec32 = vec3.normalize().scale(0.05)
-        setPosRaw(x - vec32.x, y - vec32.y, z - vec32.z)
-        playSound(SoundEvents.TRIDENT_HIT, 1.0f, 1.2f / (random.nextFloat() * 0.2f + 0.9f))
-        makeRetract()
+        if (entity.hurt(damageSource, f)) {
+            if (level() is ServerLevel) {
+                EnchantmentHelper.doPostAttackEffectsWithItemSource(
+                    level() as ServerLevel,
+                    entity,
+                    damageSource,
+                    getWeaponItem()
+                )
+            }
+
+            if (entity is LivingEntity) {
+                doKnockback(entity, damageSource)
+                doPostHurtEffects(entity)
+                val kbDir = entity.eyePosition.subtract(ownerPos()).normalize().scale(0.85)
+                entity.addDeltaMovement(kbDir)
+                entity.hasImpulse = true
+            }
+        }
+
+        deltaMovement = deltaMovement.multiply(-0.01, -0.1, -0.01)
+        playSound(SoundEvents.TRIDENT_HIT, 1.0f, 1.0f)
+
+        isReturning = true
     }
 
     override fun onHitBlock(result: BlockHitResult) {
-        if (state == AnchorState.RETRACTING) return
         super.onHitBlock(result)
-        val vec3 = result.getLocation().subtract(x, y, z)
-        deltaMovement = vec3
-        if (level() is ServerLevel) {
-            hitBlockEnchantmentEffects(level() as ServerLevel, result, weaponItem)
+        setSoundEvent(hitGroundSoundEvent)
+        if (canSmash()) {
+            val targets = level().getEntities(this, boundingBox.inflate(smashRadius)) { it is LivingEntity }
+            for (kbVictim in targets) {
+                val kbDir = kbVictim.eyePosition.subtract(position())
+                val scale = Mth.lerp(Mth.clamp(kbDir.length() / smashRadius, 0.0, 1.0), 1.0, 0.0)
+                kbVictim.addDeltaMovement(kbDir.scale(scale * 0.85))
+                kbVictim.hasImpulse = true
+            }
         }
-
-        val vec32 = vec3.normalize().scale(0.05)
-        setPosRaw(x - vec32.x, y - vec32.y, z - vec32.z)
-        playSound(SoundEvents.TRIDENT_HIT_GROUND, 1.0f, 1.2f / (random.nextFloat() * 0.2f + 0.9f))
-        val enchants = weapon.get(DataComponents.ENCHANTMENTS)
-
-        val lookup = level().registryAccess().lookupOrThrow(Registries.ENCHANTMENT)
-        val reeling = enchants?.getLevel(lookup.getOrThrow(UAEnchantments.TEMP_REELING)) ?: 0
-        if (reeling > 0) state = AnchorState.HOLDING
-        else makeRetract()
-
-        val shock = enchants?.getLevel(lookup.getOrThrow(UAEnchantments.TEMP_SHOCKWAVE)) ?: 0
-        if (shock > 0) {
-
-        }
+        if (!canReal()) isReturning = true
     }
 
-    @Suppress("UnstableApiUsage")
-    override fun remove(removalReason: RemovalReason) {
-        super.remove(removalReason)
-        owner?.removeAttached(THROWN_ANCHOR)
-    }
-
-    override fun canUsePortal(bl: Boolean): Boolean = false
-
-    override fun addAdditionalSaveData(nbt: CompoundTag) {
-        super.addAdditionalSaveData(nbt)
-        nbt.putString(ANCHOR_STATE, state.getSerializedName())
-    }
-
-    override fun readAdditionalSaveData(nbt: CompoundTag) {
-        super.readAdditionalSaveData(nbt)
-        state = AnchorState.valueOf(nbt.getString(ANCHOR_STATE).uppercase())
-    }
-
-    enum class AnchorState : StringRepresentable {
-        SHOOTING,
-        RETRACTING,
-        HOLDING;
-
-        override fun getSerializedName(): String = name.lowercase()
-
-        fun shouldMove() = this != HOLDING
-    }
+    fun canReal(): Boolean = level().getEnchantLevel(UAEnchantments.TEMP_REELING, weapon) > 0
+    fun canSmash(): Boolean = level().getEnchantLevel(UAEnchantments.TEMP_SHOCKWAVE, weapon) > 0
 
     companion object {
-        const val ANCHOR_STATE = "anchor_state"
+        val WEAPON_DATA: EntityDataAccessor<ItemStack> =
+            SynchedEntityData.defineId(UnnamesAnchorProjectile::class.java, EntityDataSerializers.ITEM_STACK)
+        val RETURNING_DATA: EntityDataAccessor<Boolean> =
+            SynchedEntityData.defineId(UnnamesAnchorProjectile::class.java, EntityDataSerializers.BOOLEAN)
     }
 }
+

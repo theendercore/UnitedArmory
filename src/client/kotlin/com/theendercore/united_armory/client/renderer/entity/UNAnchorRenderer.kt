@@ -9,11 +9,11 @@ import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
 import net.minecraft.client.renderer.entity.ItemRenderer
 import net.minecraft.client.renderer.texture.OverlayTexture
-import net.minecraft.client.renderer.texture.TextureAtlas
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.projectile.ItemSupplier
+import net.minecraft.world.inventory.InventoryMenu
 import net.minecraft.world.item.ItemDisplayContext
 
 
@@ -36,8 +36,8 @@ class UNAnchorRenderer<T>(context: EntityRendererProvider.Context) :
             val offset = entity.type.dimensions.height / 2
             stack.translate(0f, offset, 0f)
             stack.scale(1.5f, 1.5f, 1.5f)
-            stack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTick, entity.yRotO, entity.yRot) - 90.0F));
-            stack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.xRot) - 135f));
+            stack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTick, entity.yRotO, entity.yRot) - 90.0F))
+            stack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.xRot) - 135f))
             itemRenderer.renderStatic(
                 entity.item, ItemDisplayContext.FIXED, light,
                 OverlayTexture.NO_OVERLAY, stack, buffer, entity.level(), entity.id
@@ -48,7 +48,7 @@ class UNAnchorRenderer<T>(context: EntityRendererProvider.Context) :
     }
 
 
-    override fun getTextureLocation(entity: T?): ResourceLocation = TextureAtlas.LOCATION_BLOCKS
+    override fun getTextureLocation(entity: T?): ResourceLocation = InventoryMenu.BLOCK_ATLAS
 
     companion object {
         private const val MIN_CAMERA_DISTANCE_SQUARED = 12.25f
