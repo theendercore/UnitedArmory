@@ -22,7 +22,8 @@ class UnnamedAnchor(tier: Tier, properties: Properties) : SwordItem(tier, proper
     ): InteractionResultHolder<ItemStack> {
         var result = super.use(level, player, interactionHand)
         if (!result.result.consumesAction()) {
-            if (player.getAttached(THROWN_ANCHOR) == null) {
+            val id = player.getAttached(THROWN_ANCHOR)
+            if (id == null) {
                 val stack = player.getItemInHand(interactionHand)
 
                 val anchor = UnnamesAnchorProjectile(player, level, player.getViewVector(1.0f), stack)
@@ -33,6 +34,11 @@ class UnnamedAnchor(tier: Tier, properties: Properties) : SwordItem(tier, proper
                 level.addFreshEntity(anchor)
                 player.setAttached(THROWN_ANCHOR, anchor.id)
                 result = InteractionResultHolder.success(stack)
+            } else {
+                val anchor = level.getEntity(id)
+                if (anchor is UnnamesAnchorProjectile && anchor.state == UnnamesAnchorProjectile.AnchorState.HOLDING) {
+                    anchor.kill()
+                }
             }
         }
         return result

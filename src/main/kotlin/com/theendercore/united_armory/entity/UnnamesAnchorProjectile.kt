@@ -12,6 +12,7 @@ import net.minecraft.server.level.ServerEntity
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
 import net.minecraft.sounds.SoundSource
+import net.minecraft.util.Mth
 import net.minecraft.util.StringRepresentable
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
@@ -36,7 +37,8 @@ open class UnnamesAnchorProjectile : WeaponProjectile {
             owner.x + dir.x * offset,
             owner.eyePosition.y + (dir.y * offset) - (type.dimensions.height / 2),
             owner.z + dir.z * offset,
-            owner.yRot, owner.xRot,
+            0f, 0f
+//            owner.yRot, owner.xRot,
         )
         reapplyPosition()
         assignDirectionalMovement(dir, 2.0)
@@ -74,17 +76,25 @@ open class UnnamesAnchorProjectile : WeaponProjectile {
             modifyMoveDelta()
         }
 
+        val dX: Double = deltaMovement.x
+        val dY: Double = deltaMovement.y
+        val dZ: Double = deltaMovement.z
+        val l: Double = deltaMovement.horizontalDistance()
+        yRot = (Mth.atan2(dX, dZ) * 180.0f / Math.PI.toFloat()).toFloat()
 
-        // To owner particles
-        val amount = ownerPos().distanceTo(position()) * 3
-        repeat(amount.toInt()) {
-            val pos2 = ownerPos().lerp(position(), it / amount)
-            level().addParticle(ParticleTypes.ELECTRIC_SPARK, pos2.x, pos2.y, pos2.z, 0.0, 0.0, 0.0)
-        }
+        xRot = (Mth.atan2(dY, l) * 180.0f / Math.PI.toFloat()).toFloat()
+        xRot = lerpRotation(xRotO, xRot)
+        yRot = lerpRotation(yRotO, yRot)
+        /* // To owner particles
+         val amount = ownerPos().distanceTo(position()) * 3
+         repeat(amount.toInt()) {
+             val pos2 = ownerPos().lerp(position(), it / amount)
+             level().addParticle(ParticleTypes.ELECTRIC_SPARK, pos2.x, pos2.y, pos2.z, 0.0, 0.0, 0.0)
+         }
 
-        // Center Pos particles
-        val vec = position().add(0.0, type.height / 2.0, 0.0)
-        level().addParticle(ParticleTypes.OMINOUS_SPAWNING, vec.x, vec.y, vec.z, 0.0, 0.0, 0.0)
+         // Center Pos particles
+         val vec = position().add(0.0, type.height / 2.0, 0.0)
+         level().addParticle(ParticleTypes.OMINOUS_SPAWNING, vec.x, vec.y, vec.z, 0.0, 0.0, 0.0)*/
     }
 
     @Suppress("DEPRECATION")
@@ -237,7 +247,8 @@ open class UnnamesAnchorProjectile : WeaponProjectile {
         val vec32 = vec3.normalize().scale(0.05)
         setPosRaw(x - vec32.x, y - vec32.y, z - vec32.z)
 //        playSound(getHitGroundSoundEvent(), 1.0f, 1.2f / (random.nextFloat() * 0.2f + 0.9f))
-        makeRetract()
+//        makeRetract()
+        state = AnchorState.HOLDING
 
         level().broadcastEntityEvent(this, 3.toByte())
     }
