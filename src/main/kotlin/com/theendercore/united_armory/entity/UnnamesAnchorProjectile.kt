@@ -1,6 +1,7 @@
 package com.theendercore.united_armory.entity
 
 import com.theendercore.united_armory.data.UAEnchantments
+import com.theendercore.united_armory.init.UADataAttachments.THROWN_ANCHOR
 import com.theendercore.united_armory.init.UAEntityTypes
 import com.theendercore.united_armory.init.UAItems
 import com.theendercore.united_armory.util.getEnchantLevel
@@ -131,7 +132,6 @@ open class UnnamesAnchorProjectile : AbstractArrow, ItemSupplier {
                 val kbDir = entity.eyePosition.subtract(ownerPos()).normalize().scale(0.85)
                 entity.addDeltaMovement(kbDir)
                 entity.hasImpulse = true
-//                owner.get
             }
         }
 
@@ -156,11 +156,17 @@ open class UnnamesAnchorProjectile : AbstractArrow, ItemSupplier {
         if (!canReal()) isReturning = true
     }
 
+    @Suppress("UnstableApiUsage")
+    override fun remove(removalReason: RemovalReason?) {
+        super.remove(removalReason)
+        owner?.removeAttached(THROWN_ANCHOR)
+    }
+
     fun canReal(): Boolean = level().getEnchantLevel(UAEnchantments.TEMP_REELING, weapon) > 0
     fun canSmash(): Boolean = level().getEnchantLevel(UAEnchantments.TEMP_SHOCKWAVE, weapon) > 0
 
     companion object {
-        const val PICKUP_TIME = 20 * 6;
+        const val PICKUP_TIME = 20 * 6
 
         val WEAPON_DATA: EntityDataAccessor<ItemStack> =
             SynchedEntityData.defineId(UnnamesAnchorProjectile::class.java, EntityDataSerializers.ITEM_STACK)

@@ -7,6 +7,7 @@ object UAFabricEvents {
     @Suppress("UnstableApiUsage")
     fun init() {
         ServerPlayerEvents.JOIN.register { it.removeAttached(THROWN_ANCHOR) }
+        ServerPlayerEvents.LEAVE.register { it.removeAttached(THROWN_ANCHOR) }
     }
 
 }
