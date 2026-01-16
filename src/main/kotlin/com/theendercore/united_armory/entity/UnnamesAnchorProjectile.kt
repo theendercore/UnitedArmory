@@ -34,7 +34,8 @@ open class UnnamesAnchorProjectile : AbstractArrow, ItemSupplier {
     override fun tryPickup(player: Player?): Boolean = player == owner
     override fun playerTouch(player: Player) {
         if (!level().isClientSide && (inGround || isNoPhysics || isReturning) && tryPickup(player)) {
-            discard()
+            if (canReal() && airSupply < PICKUP_TIME) return
+            super.playerTouch(player)
         }
     }
 
@@ -74,7 +75,9 @@ open class UnnamesAnchorProjectile : AbstractArrow, ItemSupplier {
             return
         }
 
-        if (position().distanceTo(ownerPos()) >= 25) {
+        if (airSupply < PICKUP_TIME) airSupply++
+
+        if (position().distanceTo(ownerPos()) >= 25 && !(inGround && canReal())) {
             isReturning = true
         }
 
@@ -101,7 +104,7 @@ open class UnnamesAnchorProjectile : AbstractArrow, ItemSupplier {
     override fun onHitEntity(result: EntityHitResult) {
         val entity = result.entity
         if (entity == owner) {
-            discard()
+            airSupply = PICKUP_TIME
             return
         }
 
@@ -128,6 +131,7 @@ open class UnnamesAnchorProjectile : AbstractArrow, ItemSupplier {
                 val kbDir = entity.eyePosition.subtract(ownerPos()).normalize().scale(0.85)
                 entity.addDeltaMovement(kbDir)
                 entity.hasImpulse = true
+//                owner.get
             }
         }
 
@@ -156,6 +160,8 @@ open class UnnamesAnchorProjectile : AbstractArrow, ItemSupplier {
     fun canSmash(): Boolean = level().getEnchantLevel(UAEnchantments.TEMP_SHOCKWAVE, weapon) > 0
 
     companion object {
+        const val PICKUP_TIME = 20 * 6;
+
         val WEAPON_DATA: EntityDataAccessor<ItemStack> =
             SynchedEntityData.defineId(UnnamesAnchorProjectile::class.java, EntityDataSerializers.ITEM_STACK)
         val RETURNING_DATA: EntityDataAccessor<Boolean> =
