@@ -25,12 +25,12 @@ class UnnamedAnchor(tier: Tier, properties: Properties) : SwordItem(tier, proper
             val stack = player.getItemInHand(interactionHand)
 
             val anchor = UnnamesAnchorProjectile(level, player, stack)
-            val viewVec = player.getViewVector(1f)
+            val viewVec = player.getViewVector(1f).scale(0.5)
             anchor.shootFromRotation(player, player.xRot, player.yRot, 0.0F, 2f, 1f)
             anchor.setPos(
-                player.x + viewVec.x,
+                player.x + (viewVec.x),
                 player.eyePosition.y + (viewVec.y) - (anchor.type.dimensions.height / 2),
-                player.z + viewVec.z,
+                player.z + (viewVec.z),
             )
             level.addFreshEntity(anchor)
             result = InteractionResultHolder.success(stack)
