@@ -1,6 +1,7 @@
 package com.theendercore.united_armory.client
 
 import com.theendercore.united_armory.client.init.UARenderTypes
+import com.theendercore.united_armory.client.renderer.entity.ThrownWeaponRenderer
 import com.theendercore.united_armory.client.renderer.entity.UNAnchorRenderer
 import com.theendercore.united_armory.init.UAEntityTypes
 import com.theendercore.united_armory.init.UAParticleTypes
@@ -17,6 +18,7 @@ object UnitedArmoryClient {
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(UAModelHolder)
         ParticleFactoryRegistry.getInstance().register(UAParticleTypes.CUSTOM_SWEEP, AttackSweepParticle::Provider)
         EntityRendererRegistry.register(UAEntityTypes.UNNAMES_ANCHOR, ::UNAnchorRenderer)
+        EntityRendererRegistry.register(UAEntityTypes.UN_SPEAR, ::ThrownWeaponRenderer)
         NetheriteShield.init()
     }
 }

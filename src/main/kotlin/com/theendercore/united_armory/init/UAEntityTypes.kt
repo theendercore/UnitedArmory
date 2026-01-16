@@ -1,6 +1,7 @@
 package com.theendercore.united_armory.init
 
 import com.theendercore.united_armory.UnitedArmory.id
+import com.theendercore.united_armory.entity.UnSpearProjectile
 import com.theendercore.united_armory.entity.UnnamesAnchorProjectile
 import net.minecraft.core.Registry
 import net.minecraft.core.registries.BuiltInRegistries
@@ -12,9 +13,14 @@ import net.minecraft.world.entity.MobCategory
 object UAEntityTypes {
     val ENTITY_TYPES = mutableListOf<EntityType<*>>()
 
-//    // Steel from : EntityType.class
     val UNNAMES_ANCHOR = register(
         "unnames_anchor", EntityType.Builder.of(::UnnamesAnchorProjectile, MobCategory.MISC)
+            .sized(0.5f, 0.5f)
+            .noSummon()
+    )
+
+    val UN_SPEAR = register(
+        "un_spear", EntityType.Builder.of(::UnSpearProjectile, MobCategory.MISC)
             .sized(0.5f, 0.5f)
             .noSummon()
     )

@@ -1,16 +1,15 @@
 package com.theendercore.united_armory.entity
 
-import com.theendercore.united_armory.data.UAEnchantments
-import com.theendercore.united_armory.init.UADataAttachments.THROWN_ANCHOR
 import com.theendercore.united_armory.init.UAEntityTypes
 import com.theendercore.united_armory.init.UAItems
-import com.theendercore.united_armory.util.getEnchantLevel
+import net.minecraft.core.particles.ParticleTypes
 import net.minecraft.network.syncher.EntityDataAccessor
 import net.minecraft.network.syncher.EntityDataSerializers
 import net.minecraft.network.syncher.SynchedEntityData
 import net.minecraft.server.level.ServerLevel
 import net.minecraft.sounds.SoundEvents
-import net.minecraft.util.Mth
+import net.minecraft.world.effect.MobEffectInstance
+import net.minecraft.world.effect.MobEffects
 import net.minecraft.world.entity.EntityType
 import net.minecraft.world.entity.LivingEntity
 import net.minecraft.world.entity.player.Player
@@ -23,19 +22,19 @@ import net.minecraft.world.phys.BlockHitResult
 import net.minecraft.world.phys.EntityHitResult
 import net.minecraft.world.phys.Vec3
 
-open class UnnamesAnchorProjectile : AbstractArrow, ItemSupplier {
-    constructor(entityType: EntityType<out UnnamesAnchorProjectile>, level: Level) : super(entityType, level)
-    constructor(level: Level, owner: LivingEntity, weapon: ItemStack) : super(UAEntityTypes.UNNAMES_ANCHOR, level) {
+open class UnSpearProjectile : AbstractArrow, ItemSupplier {
+    constructor(entityType: EntityType<out UnSpearProjectile>, level: Level) : super(entityType, level)
+    constructor(level: Level, owner: LivingEntity, weapon: ItemStack) : super(UAEntityTypes.UN_SPEAR, level) {
         setOwner(owner)
         this.weapon = weapon.copy()
         isNoGravity = true
     }
 
     override fun getDefaultPickupItem(): ItemStack = getItem()
-    override fun tryPickup(player: Player?): Boolean = player == owner
+    override fun tryPickup(player: Player?): Boolean = player == owner && (isReturning || isReturning)
     override fun playerTouch(player: Player) {
-        if (!level().isClientSide && (inGround || isNoPhysics || isReturning) && tryPickup(player)) {
-            if (canReal() && airSupply < PICKUP_TIME) return
+        if (!level().isClientSide && (inGround || isReturning) && tryPickup(player)) {
+            heldEntity?.addEffect(MobEffectInstance(MobEffects.MOVEMENT_SLOWDOWN, 40, 1))
             super.playerTouch(player)
         }
     }
@@ -53,11 +52,11 @@ open class UnnamesAnchorProjectile : AbstractArrow, ItemSupplier {
             entityData.set(RETURNING_DATA, value)
         }
 
-    open val smashRadius = 4.5
+    var heldEntity: LivingEntity? = null
 
     override fun defineSynchedData(builder: SynchedEntityData.Builder) {
         super.defineSynchedData(builder)
-        builder.define(WEAPON_DATA, UAItems.UNNAMED_ANCHOR.defaultInstance)
+        builder.define(WEAPON_DATA, UAItems.UNNAMED_SPEAR.defaultInstance)
         builder.define(RETURNING_DATA, false)
     }
 
@@ -69,36 +68,36 @@ open class UnnamesAnchorProjectile : AbstractArrow, ItemSupplier {
         if (!isReturning) super.setXRot(f)
     }
 
-    @Suppress("UnstableApiUsage")
     override fun tick() {
         val own = owner
         if (own == null || own.isRemoved) {
-            discard()
-            return
-        }
-        val heldId = own.getAttached(THROWN_ANCHOR)
-        if (heldId == null || heldId != this.id) {
-            discard()
+            blowTheFuckUp()
             return
         }
 
-        if (airSupply < PICKUP_TIME) airSupply++
+        if (position().distanceTo(ownerPos()) >= 18) {
+            blowTheFuckUp()
+        }
 
-        if (position().distanceTo(ownerPos()) >= 25 && !(inGround && canReal())) {
-            isReturning = true
+        if (inGroundTime > 1) {
+            blowTheFuckUp()
         }
 
         if (isReturning) {
             noPhysics = true
-            deltaMovement = deltaMovement.add(ownerPos().subtract(position()).normalize().scale(0.95))
+            deltaMovement = ownerPos().subtract(position()).normalize().scale(0.85)
             hasImpulse = true
+            heldEntity?.let { he ->
+                if (he.isAlive) {
+                    he.deltaMovement = deltaMovement
+                    he.hasImpulse = true
+                    he.resetFallDistance()
+                } else {
+                    heldEntity = null
+                }
+            }
         }
 
-        if (!isReturning && inGround && canReal()) {
-            owner!!.deltaMovement = owner!!.deltaMovement.add(position().subtract(ownerPos()).normalize().scale(0.95))
-            owner!!.hasImpulse = true
-            owner!!.resetFallDistance()
-        }
         super.tick()
     }
 
@@ -111,18 +110,22 @@ open class UnnamesAnchorProjectile : AbstractArrow, ItemSupplier {
     override fun onHitEntity(result: EntityHitResult) {
         val entity = result.entity
         if (entity == owner) {
-            airSupply = PICKUP_TIME
+            blowTheFuckUp()
             return
         }
-
-        var f = 8.0f
-        val entity2 = owner
-        val damageSource = damageSources().trident(this, (entity2 ?: this))
+        var damageAmount = 8.0f
+        val damageSource = damageSources().trident(this, (owner ?: this))
         if (level() is ServerLevel) {
-            f = EnchantmentHelper.modifyDamage(level() as ServerLevel, getWeaponItem(), entity, damageSource, f)
+            damageAmount = EnchantmentHelper.modifyDamage(
+                level() as ServerLevel,
+                getWeaponItem(),
+                entity,
+                damageSource,
+                damageAmount
+            )
         }
 
-        if (entity.hurt(damageSource, f)) {
+        if (entity.hurt(damageSource, damageAmount)) {
             if (level() is ServerLevel) {
                 EnchantmentHelper.doPostAttackEffectsWithItemSource(
                     level() as ServerLevel,
@@ -135,49 +138,52 @@ open class UnnamesAnchorProjectile : AbstractArrow, ItemSupplier {
             if (entity is LivingEntity) {
                 doKnockback(entity, damageSource)
                 doPostHurtEffects(entity)
-                val kbDir = entity.eyePosition.subtract(ownerPos()).normalize().scale(0.85)
-                entity.addDeltaMovement(kbDir)
-                entity.hasImpulse = true
+                if (!entity.isRemoved) {
+                    heldEntity = entity
+                    isReturning = true
+                }
             }
+        } else {
+            blowTheFuckUp()
         }
 
         deltaMovement = deltaMovement.multiply(-0.01, -0.1, -0.01)
         playSound(SoundEvents.TRIDENT_HIT, 1.0f, 1.0f)
-
-        isReturning = true
     }
 
     override fun onHitBlock(result: BlockHitResult) {
         super.onHitBlock(result)
         setSoundEvent(hitGroundSoundEvent)
-        if (canSmash()) {
-            val targets = level().getEntities(this, boundingBox.inflate(smashRadius)) { it is LivingEntity }
-            for (kbVictim in targets) {
-                val kbDir = kbVictim.eyePosition.subtract(position())
-                val scale = Mth.lerp(Mth.clamp(kbDir.length() / smashRadius, 0.0, 1.0), 1.0, 0.0)
-                kbVictim.addDeltaMovement(kbDir.scale(scale * 0.85))
-                kbVictim.hasImpulse = true
+    }
+
+    private fun blowTheFuckUp() {
+        if (!level().isClientSide) {
+            level().broadcastEntityEvent(this, 16)
+            discard()
+        }
+    }
+
+    override fun handleEntityEvent(b: Byte) {
+        super.handleEntityEvent(b)
+        if (b == 16.toByte()) {
+            val scale = 2.0
+            repeat(100) {
+                level().addParticle(
+                    ParticleTypes.TRIAL_OMEN,
+                    x, y, z,
+                    (random.nextFloat() - 0.5) * scale,
+                    (random.nextFloat() - 0.5) * scale,
+                    (random.nextFloat() - 0.5) * scale
+                )
             }
         }
-        if (!canReal()) isReturning = true
     }
-
-    @Suppress("UnstableApiUsage")
-    override fun remove(removalReason: RemovalReason?) {
-        super.remove(removalReason)
-        owner?.removeAttached(THROWN_ANCHOR)
-    }
-
-    fun canReal(): Boolean = level().getEnchantLevel(UAEnchantments.TEMP_REELING, weapon) > 0
-    fun canSmash(): Boolean = level().getEnchantLevel(UAEnchantments.TEMP_SHOCKWAVE, weapon) > 0
 
     companion object {
-        const val PICKUP_TIME = 20 * 6
-
         val WEAPON_DATA: EntityDataAccessor<ItemStack> =
-            SynchedEntityData.defineId(UnnamesAnchorProjectile::class.java, EntityDataSerializers.ITEM_STACK)
+            SynchedEntityData.defineId(UnSpearProjectile::class.java, EntityDataSerializers.ITEM_STACK)
         val RETURNING_DATA: EntityDataAccessor<Boolean> =
-            SynchedEntityData.defineId(UnnamesAnchorProjectile::class.java, EntityDataSerializers.BOOLEAN)
+            SynchedEntityData.defineId(UnSpearProjectile::class.java, EntityDataSerializers.BOOLEAN)
     }
 }
 

@@ -9,16 +9,12 @@ import net.fabricmc.api.EnvType
 import net.fabricmc.api.Environment
 import net.minecraft.client.renderer.MultiBufferSource
 import net.minecraft.client.renderer.culling.Frustum
-import net.minecraft.client.renderer.entity.EntityRenderer
 import net.minecraft.client.renderer.entity.EntityRendererProvider
-import net.minecraft.client.renderer.entity.ItemRenderer
-import net.minecraft.client.renderer.texture.OverlayTexture
 import net.minecraft.resources.ResourceLocation
 import net.minecraft.util.Mth
 import net.minecraft.world.entity.Entity
 import net.minecraft.world.entity.projectile.ItemSupplier
 import net.minecraft.world.inventory.InventoryMenu
-import net.minecraft.world.item.ItemDisplayContext
 import net.minecraft.world.phys.Vec3
 import kotlin.math.acos
 import kotlin.math.atan2
@@ -26,10 +22,8 @@ import kotlin.math.atan2
 
 @Environment(EnvType.CLIENT)
 class UNAnchorRenderer<T>(context: EntityRendererProvider.Context) :
-    EntityRenderer<T>(context) where T : UnnamesAnchorProjectile, T : ItemSupplier {
-    private val itemRenderer: ItemRenderer = context.itemRenderer
+    ThrownWeaponRenderer<T>(context) where T : UnnamesAnchorProjectile, T : ItemSupplier {
 
-    @Suppress("DuplicatedCode")
     override fun render(
         entity: T?,
         f: Float,
@@ -40,17 +34,6 @@ class UNAnchorRenderer<T>(context: EntityRendererProvider.Context) :
     ) {
         super.render(entity, f, partialTick, poseStack, bufferSource, light)
         if (entity == null) return
-        poseStack.pushPose()
-        val offset = entity.type.dimensions.height / 2
-        poseStack.translate(0f, offset, 0f)
-        poseStack.scale(1.5f, 1.5f, 1.5f)
-        poseStack.mulPose(Axis.YP.rotationDegrees(Mth.lerp(partialTick, entity.yRotO, entity.yRot) - 90.0F))
-        poseStack.mulPose(Axis.ZP.rotationDegrees(Mth.lerp(partialTick, entity.xRotO, entity.xRot) - 135f))
-        itemRenderer.renderStatic(
-            entity.item, ItemDisplayContext.FIXED, light,
-            OverlayTexture.NO_OVERLAY, poseStack, bufferSource, entity.level(), entity.id
-        )
-        poseStack.popPose()
         // Chain renderer
         val owner = entity.owner ?: return
         val yOffset = entity.bbHeight * 0.5f
