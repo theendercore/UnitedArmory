@@ -69,9 +69,15 @@ open class UnnamesAnchorProjectile : AbstractArrow, ItemSupplier {
         if (!isReturning) super.setXRot(f)
     }
 
+    @Suppress("UnstableApiUsage")
     override fun tick() {
         val own = owner
         if (own == null || own.isRemoved) {
+            discard()
+            return
+        }
+        val heldId = own.getAttached(THROWN_ANCHOR)
+        if (heldId == null || heldId != this.id) {
             discard()
             return
         }
