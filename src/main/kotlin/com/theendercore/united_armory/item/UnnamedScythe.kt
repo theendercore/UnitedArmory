@@ -11,6 +11,8 @@ import net.minecraft.world.item.Tier
 // Name ideas
 // Bloodleach
 // Bloodless Scythe
+// Bloodlet
+// Bloodletter
 class UnnamedScythe(tier: Tier, properties: Properties) : SwordItem(tier, properties) {
     constructor(properties: Properties) : this(UATiers.UNNAMED_SCYTHE, properties)
 
