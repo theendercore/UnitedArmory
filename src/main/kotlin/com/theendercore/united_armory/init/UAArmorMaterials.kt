@@ -12,19 +12,19 @@ import net.minecraft.world.item.crafting.Ingredient
 
 object UAArmorMaterials {
 
-    val CROWN = register(
-        "crown", ArmorMaterial(
+    val FARLANDS_CROWN = register(
+        "farlands_crown", ArmorMaterial(
             mapOf(
-                ArmorItem.Type.BOOTS to 69,
-                ArmorItem.Type.LEGGINGS to 69,
-                ArmorItem.Type.CHESTPLATE to 69,
+                ArmorItem.Type.BOOTS to 0,
+                ArmorItem.Type.LEGGINGS to 0,
+                ArmorItem.Type.CHESTPLATE to 0,
                 ArmorItem.Type.HELMET to 5,
-                ArmorItem.Type.BODY to 69,
+                ArmorItem.Type.BODY to 5,
             ),
             0,
-            SoundEvents.ARMOR_EQUIP_TURTLE,
-            { Ingredient.of(ItemTags.GOLD_ORES) },
-            listOf(ArmorMaterial.Layer(id("crown"))),
+            SoundEvents.ARMOR_EQUIP_GOLD,
+            { Ingredient.of(ItemTags.DIRT) },
+            listOf(ArmorMaterial.Layer(id("farlands_crown"))),
             0f, 0f,
         )
     )

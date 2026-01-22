@@ -1,7 +1,7 @@
 package com.theendercore.united_armory.init
 
 import com.theendercore.united_armory.UnitedArmory.id
-import com.theendercore.united_armory.init.UAArmorMaterials.CROWN
+import com.theendercore.united_armory.init.UAArmorMaterials.FARLANDS_CROWN
 import com.theendercore.united_armory.init.misc.*
 import com.theendercore.united_armory.item.CustomShieldItem
 import com.theendercore.united_armory.item.UnnamedAnchor
@@ -34,7 +34,7 @@ object UAItems {
     val BLOODLEACH = register("bloodleach", Bloodleach(bloodleach()))
     val UNNAMED_SPEAR = register("unnamed_spear", UnnamedSpear(unnamedSpear()))
     val NETHERITE_SHIELD = register("netherite_shield", CustomShieldItem(shieldProps()))
-    val UNNAMED_CROWN = register("unnamed_crown", ArmorItem(CROWN, ArmorItem.Type.HELMET, unnamedCrown()))
+    val CROWN_OF_FARLANDS = register("crown_of_farlands", ArmorItem(FARLANDS_CROWN, ArmorItem.Type.HELMET, crownOfFarlands()))
     val STRENGTH_RING = register("strength_ring", ring(ATTACK_DAMAGE, 12.0))
     val SPEED_RING = register("speed_ring", ring(MOVEMENT_SPEED, 0.8, ADD_MULTIPLIED_TOTAL))
     val HEALTH_BOOST_RING = register("health_boost_ring", ring(MAX_HEALTH, 10.0))

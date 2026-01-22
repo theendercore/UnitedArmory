@@ -18,6 +18,9 @@ class ItemTagsProvider(o: FabricDataOutput, r: CompletableFuture<HolderLookup.Pr
         getOrCreateTagBuilder(ItemTags.PICKAXES).add(UAItems.UNNAMED_ANCHOR)
         getOrCreateTagBuilder(ItemTags.DURABILITY_ENCHANTABLE).add(UAItems.NETHERITE_SHIELD)
 
+        getOrCreateTagBuilder(ItemTags.PIGLIN_LOVED).add(UAItems.CROWN_OF_FARLANDS)
+        getOrCreateTagBuilder(ItemTags.HEAD_ARMOR).add(UAItems.CROWN_OF_FARLANDS)
+
         // mod
         getOrCreateTagBuilder(UAItemTags.ANCHOR_ENCHANTABLE).add(UAItems.UNNAMED_ANCHOR)
         getOrCreateTagBuilder(UAItemTags.NON_DISABLEABLE_SHIELD).add(UAItems.NETHERITE_SHIELD)

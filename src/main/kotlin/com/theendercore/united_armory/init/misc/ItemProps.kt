@@ -65,12 +65,12 @@ fun shieldProps(durability: Int = 512): Properties = Properties()
     .durability(durability)
     .component(DataComponents.BANNER_PATTERNS, BannerPatternLayers.EMPTY)
 
-fun unnamedCrown(): Properties = Properties()
-    .durability(666/*ArmorItem.Type.HELMET.getDurability(1)*/)
+fun crownOfFarlands(): Properties = Properties()
+    .durability(69/*ArmorItem.Type.HELMET.getDurability(1)*/)
     .attributes(
         ItemAttributeModifiers.builder().add(
             Attributes.MAX_HEALTH,
-            AttributeModifier(id("unnamed_crown.max_health"), 10.0, AttributeModifier.Operation.ADD_VALUE),
+            AttributeModifier(id("crown_of_farlands.max_health"), 10.0, AttributeModifier.Operation.ADD_VALUE),
             EquipmentSlotGroup.HEAD
         ).build()
     )

@@ -22,12 +22,13 @@ class ModelProvider(o: FabricDataOutput) : FabricModelProvider(o) {
         )
         gen.genList(
             listOf(
-                UAItems.UNNAMED_CROWN,
                 UAItems.STRENGTH_RING,
                 UAItems.SPEED_RING,
                 UAItems.HEALTH_BOOST_RING
             ), ModelTemplates.FLAT_ITEM
         )
+
+        gen.generateArmorTrims(UAItems.CROWN_OF_FARLANDS)
     }
 
     fun ItemModelGenerators.genList(flat: List<Item>, model: ModelTemplate) {
