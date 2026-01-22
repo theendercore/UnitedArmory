@@ -40,9 +40,9 @@ fun unnamedAnchor(): Properties = Properties()
     .customSweep()
     .customSounds()
 
-fun unnamedScythe(): Properties = Properties()
-    .attributes(swordAttributes(UATiers.UNNAMED_SCYTHE, -2.6f))
-    .customSweep()
+fun bloodleach(): Properties = Properties()
+    .attributes(swordAttributes(UATiers.BLOODLEACH, -2.6f))
+    .customSweep(UASoundsEvents.ATTACK_SWEEP, UAParticleTypes.BLOODLEACH_SWEEP)
     .customSounds()
 
 

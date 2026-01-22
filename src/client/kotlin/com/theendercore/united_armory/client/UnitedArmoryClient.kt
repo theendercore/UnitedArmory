@@ -9,6 +9,7 @@ import net.fabricmc.fabric.api.client.particle.v1.ParticleFactoryRegistry
 import net.fabricmc.fabric.api.client.rendering.v1.EntityRendererRegistry
 import net.fabricmc.fabric.api.resource.ResourceManagerHelper
 import net.minecraft.client.particle.AttackSweepParticle
+import net.minecraft.core.particles.SimpleParticleType
 import net.minecraft.server.packs.PackType
 
 @Suppress("unused")
@@ -16,9 +17,13 @@ object UnitedArmoryClient {
     fun init() {
         UARenderTypes.init()
         ResourceManagerHelper.get(PackType.CLIENT_RESOURCES).registerReloadListener(UAModelHolder)
-        ParticleFactoryRegistry.getInstance().register(UAParticleTypes.CUSTOM_SWEEP, AttackSweepParticle::Provider)
+        sweepParticle(UAParticleTypes.CUSTOM_SWEEP)
+        sweepParticle(UAParticleTypes.BLOODLEACH_SWEEP)
         EntityRendererRegistry.register(UAEntityTypes.UNNAMES_ANCHOR, ::UNAnchorRenderer)
         EntityRendererRegistry.register(UAEntityTypes.UN_SPEAR, ::ThrownWeaponRenderer)
         NetheriteShield.init()
     }
+
+    fun sweepParticle(particle: SimpleParticleType) =
+        ParticleFactoryRegistry.getInstance().register(particle, AttackSweepParticle::Provider)
 }

@@ -6,19 +6,31 @@ import net.fabricmc.fabric.api.datagen.v1.FabricDataOutput
 import net.fabricmc.fabric.api.datagen.v1.provider.FabricModelProvider
 import net.minecraft.data.models.BlockModelGenerators
 import net.minecraft.data.models.ItemModelGenerators
+import net.minecraft.data.models.model.ModelTemplate
 import net.minecraft.data.models.model.ModelTemplates
+import net.minecraft.world.item.Item
 
 class ModelProvider(o: FabricDataOutput) : FabricModelProvider(o) {
     override fun generateBlockStateModels(blockStateModelGenerator: BlockModelGenerators) = Unit
     override fun generateItemModels(gen: ItemModelGenerators) {
-        val weapon = listOf(UAItems.UNNAMED_ANCHOR, UAItems.UNNAMED_SCYTHE, UAItems.UNNAMED_SPEAR)
-        for (item in weapon) {
-            gen.generateFlatItem(item, ModelTemplates.FLAT_HANDHELD_ITEM)
-        }
-        val flat = listOf(UAItems.UNNAMED_CROWN, UAItems.STRENGTH_RING, UAItems.SPEED_RING, UAItems.HEALTH_BOOST_RING)
+        gen.genList(
+            listOf(
+                UAItems.UNNAMED_ANCHOR,
+                UAItems.BLOODLEACH,
+                UAItems.UNNAMED_SPEAR
+            ), ModelTemplates.FLAT_HANDHELD_ITEM
+        )
+        gen.genList(
+            listOf(
+                UAItems.UNNAMED_CROWN,
+                UAItems.STRENGTH_RING,
+                UAItems.SPEED_RING,
+                UAItems.HEALTH_BOOST_RING
+            ), ModelTemplates.FLAT_ITEM
+        )
+    }
 
-        for (item in flat) {
-            gen.generateFlatItem(item, ModelTemplates.FLAT_ITEM)
-        }
+    fun ItemModelGenerators.genList(flat: List<Item>, model: ModelTemplate) {
+        for (item in flat) generateFlatItem(item, model)
     }
 }

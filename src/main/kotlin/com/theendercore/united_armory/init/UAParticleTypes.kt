@@ -13,6 +13,7 @@ object UAParticleTypes {
 //    val PARTICLE_TYPES get() = getModEntries(BuiltInRegistries.SOUND_EVENT)
 
     val CUSTOM_SWEEP: SimpleParticleType = register("custom_sweep", simple())
+    val BLOODLEACH_SWEEP: SimpleParticleType = register("bloodleach_sweep", simple())
 
     fun init() = Unit
 

@@ -14,7 +14,7 @@ class ItemTagsProvider(o: FabricDataOutput, r: CompletableFuture<HolderLookup.Pr
     override fun addTags(arg: HolderLookup.Provider) {
         // vanilla
         getOrCreateTagBuilder(ItemTags.SWORDS)
-            .add(UAItems.UNNAMED_ANCHOR, UAItems.UNNAMED_SCYTHE, UAItems.UNNAMED_SPEAR)
+            .add(UAItems.UNNAMED_ANCHOR, UAItems.BLOODLEACH, UAItems.UNNAMED_SPEAR)
         getOrCreateTagBuilder(ItemTags.PICKAXES).add(UAItems.UNNAMED_ANCHOR)
         getOrCreateTagBuilder(ItemTags.DURABILITY_ENCHANTABLE).add(UAItems.NETHERITE_SHIELD)
 

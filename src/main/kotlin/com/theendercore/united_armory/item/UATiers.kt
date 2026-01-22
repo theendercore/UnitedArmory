@@ -10,7 +10,7 @@ import net.minecraft.world.level.block.Block
 
 object UATiers {
     val UNNAMED_ANCHOR = UATier(666, 6f, 10f, 0, BlockTags.INCORRECT_FOR_DIAMOND_TOOL, ItemTags.DIRT)
-    val UNNAMED_SCYTHE = UATier(666, 6f, 8f, 0, BlockTags.INCORRECT_FOR_IRON_TOOL, ItemTags.DIRT)
+    val BLOODLEACH = UATier(666, 6f, 8f, 0, BlockTags.INCORRECT_FOR_IRON_TOOL, ItemTags.DIRT)
     val UNNAMED_SPEAR = UATier(666, 6f, 6f, 0, BlockTags.INCORRECT_FOR_IRON_TOOL, ItemTags.DIRT)
 
     class UATier(

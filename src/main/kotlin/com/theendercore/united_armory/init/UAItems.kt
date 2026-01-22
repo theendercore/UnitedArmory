@@ -5,7 +5,7 @@ import com.theendercore.united_armory.init.UAArmorMaterials.CROWN
 import com.theendercore.united_armory.init.misc.*
 import com.theendercore.united_armory.item.CustomShieldItem
 import com.theendercore.united_armory.item.UnnamedAnchor
-import com.theendercore.united_armory.item.UnnamedScythe
+import com.theendercore.united_armory.item.Bloodleach
 import com.theendercore.united_armory.item.UnnamedSpear
 import com.theendercore.united_armory.util.getId
 import com.theendercore.united_armory.util.getModEntries
@@ -31,7 +31,7 @@ object UAItems {
     val ITEMS get() = getModEntries(BuiltInRegistries.ITEM)
 
     val UNNAMED_ANCHOR = register("unnamed_anchor", UnnamedAnchor(unnamedAnchor()))
-    val UNNAMED_SCYTHE = register("unnamed_scythe", UnnamedScythe(unnamedScythe()))
+    val BLOODLEACH = register("bloodleach", Bloodleach(bloodleach()))
     val UNNAMED_SPEAR = register("unnamed_spear", UnnamedSpear(unnamedSpear()))
     val NETHERITE_SHIELD = register("netherite_shield", CustomShieldItem(shieldProps()))
     val UNNAMED_CROWN = register("unnamed_crown", ArmorItem(CROWN, ArmorItem.Type.HELMET, unnamedCrown()))

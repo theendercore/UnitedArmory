@@ -13,8 +13,8 @@ import net.minecraft.world.item.Tier
 // Bloodless Scythe
 // Bloodlet
 // Bloodletter
-class UnnamedScythe(tier: Tier, properties: Properties) : SwordItem(tier, properties) {
-    constructor(properties: Properties) : this(UATiers.UNNAMED_SCYTHE, properties)
+class Bloodleach(tier: Tier, properties: Properties) : SwordItem(tier, properties) {
+    constructor(properties: Properties) : this(UATiers.BLOODLEACH, properties)
 
     override fun postHurtEnemy(stack: ItemStack, victim: LivingEntity, player: LivingEntity) {
         super.postHurtEnemy(stack, victim, player)
