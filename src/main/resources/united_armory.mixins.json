@@ -5,13 +5,14 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [
     "AttackTickerAccessor",
-    "AxeItemMixin",
+    "shield.DisableStrippingMixin",
+    "BloodleachKBMixin",
     "CustomAttackSoundsMixin",
     "CustomSweepMixin",
-    "phantasm.PhantasmLivingEntityMixin",
     "ItemStackMixin",
-    "PlayerMixin",
-    "ScytheKBMixin"
+    "shield.PlayerShieldMixin",
+    "phantasm.PhantasmLivingEntityMixin",
+    "shield.ShieldDecorationRecipeMixin"
   ],
   "injectors": {
     "defaultRequire": 1

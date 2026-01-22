@@ -1,4 +1,4 @@
-package com.theendercore.united_armory.mixin;
+package com.theendercore.united_armory.mixin.shield;
 
 import com.llamalad7.mixinextras.injector.ModifyExpressionValue;
 import net.fabricmc.fabric.api.tag.convention.v2.ConventionalItemTags;
@@ -12,8 +12,8 @@ import org.spongepowered.asm.mixin.injection.At;
 import static com.theendercore.united_armory.data.tag.UAItemTags.NON_DISABLEABLE_SHIELD;
 
 @Mixin(Player.class)
-public abstract class PlayerMixin extends LivingEntity {
-    protected PlayerMixin(EntityType<? extends LivingEntity> entityType, Level level) {
+public abstract class PlayerShieldMixin extends LivingEntity {
+    protected PlayerShieldMixin(EntityType<? extends LivingEntity> entityType, Level level) {
         super(entityType, level);
     }
 

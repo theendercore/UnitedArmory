@@ -1,12 +1,9 @@
 {
   "sources": [
     {
-      "type": "single",
-      "resource": "united_armory:entity/shield_base"
-    },
-    {
-      "type": "single",
-      "resource": "united_armory:entity/shield_base_nopattern"
+      "type": "directory",
+      "source": "entity/netherite_shield",
+      "prefix": "entity/netherite_shield/"
     }
   ]
 }

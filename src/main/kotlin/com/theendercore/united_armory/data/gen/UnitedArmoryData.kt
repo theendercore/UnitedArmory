@@ -5,6 +5,7 @@ import com.theendercore.united_armory.data.gen.prov.assets.EnLangProvider
 import com.theendercore.united_armory.data.gen.prov.assets.ModelProvider
 import com.theendercore.united_armory.data.gen.prov.data.DamageTypeCreator
 import com.theendercore.united_armory.data.gen.prov.data.EnchantmentCreator
+import com.theendercore.united_armory.data.gen.prov.data.RecipeProvider
 import com.theendercore.united_armory.data.gen.prov.tags.DamageTypesTagsProvider
 import com.theendercore.united_armory.data.gen.prov.tags.EntityTypeTagsProvider
 import com.theendercore.united_armory.data.gen.prov.tags.ItemTagsProvider
@@ -27,6 +28,7 @@ object UnitedArmoryData : DataGeneratorEntrypoint {
         pack.addProvider(::ModelProvider)
         // Data
         pack.addProvider(::DynamicRegistryProvider)
+        pack.addProvider(::RecipeProvider)
         // Tags
         pack.addProvider(::ItemTagsProvider)
         pack.addProvider(::EntityTypeTagsProvider)

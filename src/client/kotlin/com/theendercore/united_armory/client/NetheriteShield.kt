@@ -13,8 +13,10 @@ import net.minecraft.world.item.DyeColor
 import net.minecraft.world.level.block.entity.BannerPatternLayers
 
 object NetheriteShield {
-    val SHIELD_BASE = Material(Sheets.SHIELD_SHEET, id("entity/shield_base"))
-    val NO_PATTERN_SHIELD = Material(Sheets.SHIELD_SHEET, id("entity/shield_base_nopattern"))
+    val SHIELD_BASE = shield("base")
+    val NO_PATTERN_SHIELD = shield("no_pattern")
+
+    fun shield(name: String) = Material(Sheets.SHIELD_SHEET, id("entity/netherite_shield/$name"))
 
     fun init() {
         ItemProperties.register(
